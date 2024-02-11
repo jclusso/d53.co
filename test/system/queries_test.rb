@@ -7,19 +7,25 @@ class QueriesTest < ApplicationSystemTestCase
 
   test "should create query" do
     visit root_path
+    create_query
+    assert_text "Results"
+  end
 
+  test "should destroy Query" do
+    visit root_path
+    create_query
+    click_on "Remove", match: :first
+    accept_alert
+    assert_current_path root_path
+  end
+
+  private
+
+  def create_query
     fill_in "query[domain]", with: @query.domain
     select @query.server, from: "query[server]"
     select @query.type, from: "query[type]"
     click_on "Search"
-
-    assert_current_path query_path(Query.last)
   end
 
-  test "should destroy Query" do
-    visit query_url(@query)
-    click_on "Delete Search", match: :first
-    accept_alert
-    assert_current_path root_path
-  end
 end
