@@ -1,0 +1,24 @@
+# == Schema Information
+#
+# Table name: queries
+#
+#  id         :uuid             not null, primary key
+#  domain     :string
+#  duration   :integer
+#  results    :json             not null
+#  server     :string
+#  server_ip  :string
+#  type       :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
+one:
+  domain: google.com
+  type: A
+  server: Cloudflare
+
+two:
+  domain: dig53.co
+  type: NS
+  server: Google

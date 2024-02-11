@@ -1,0 +1,41 @@
+<%= render 'form' %>
+
+<% if @queries.present? %>
+  <div class="space-y-4 mt-40">
+    <div class="flex justify-between items-center">
+      <h2 class="text-3xl text-neutral-200 font-semibold">Recent Searches</h2>
+      <!--<ul class="flex space-x-2">-->
+        <%# filters = { "Mine": nil, "All": 'all' } %>
+        <%# filters.each do |name, filter| %>
+          <%#
+            active = params[:filter] == filter
+            filter_classes = class_names(
+              "transition cursor-pointer",
+              "hover:text-white hover:bg-neutral-800 border border-neutral-800",
+              "px-3 py-2 rounded-lg",
+              "bg-black text-neutral-500": !active,
+              "bg-neutral-800 text-white": active
+            )
+          %>
+<!--          <li><%#= link_to name, root_path(filter: filter), class: filter_classes %></li>-->
+        <%# end %>
+<!--      </ul>-->
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="table-auto min-w-full">
+        <thead class="border-b border-neutral-300">
+          <tr>
+            <th class="text-lime-500 font-semibold text-left px-3 py-2">Domain</th>
+            <th class="text-lime-500 font-semibold text-left px-3 py-2">Type</th>
+            <th class="text-lime-500 font-semibold text-left px-3 py-2">Server</th>
+            <th class="text-lime-500 font-semibold text-left px-3 py-2">Duration</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-800">
+          <%= render @queries.limit(25) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>
