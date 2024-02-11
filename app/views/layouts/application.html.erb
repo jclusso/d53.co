@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "A simple DNS lookup tool | D53" %></title>
+    <title><%= content_for(:title) || "DNS Lookup Tool" %> | D53</title>
+    <meta name="description" content="A simple DNS lookup tool." />
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
@@ -13,6 +14,21 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://d53.co" />
+    <meta property="og:title" content="DNS Lookup Tool | D53" />
+    <meta property="og:description" content="A simple DNS lookup tool." />
+    <meta property="og:image" content="/meta-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://d53.co" />
+    <meta property="twitter:title" content="DNS Lookup Tool | D53" />
+    <meta property="twitter:description" content="A simple DNS lookup tool." />
+    <meta property="twitter:image" content="/meta-image.png" />
+
     <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
@@ -22,7 +38,7 @@
     <main class="container mx-auto max-w-2xl p-4 sm:py-20">
       <div class="flex flex-col sm:justify-between items-center my-2">
         <%= render_logo %>
-        <span class="text-sm text-neutral-500 p-3">A simple DNS lookup tool</span>
+        <span class="text-sm text-neutral-400 p-3">A simple DNS lookup tool</span>
       </div>
       <%= yield %>
     </main>
