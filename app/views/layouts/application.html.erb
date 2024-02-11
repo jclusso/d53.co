@@ -20,9 +20,9 @@
 
   <body class="bg-neutral-950 text-white font-mono">
     <main class="container mx-auto max-w-2xl p-4 sm:py-20">
-      <div class="flex justify-between items-end mb-4">
+      <div class="flex flex-col sm:justify-between items-center my-2">
         <%= render_logo %>
-        <span class="text-sm text-neutral-500">A simple DNS lookup tool</span>
+        <span class="text-sm text-neutral-500 p-3">A simple DNS lookup tool</span>
       </div>
       <%= yield %>
     </main>

@@ -14,6 +14,8 @@ class QueriesController < ApplicationController
 
   def create
     @query = Query.new(query_params)
+    session[:last_query_type] = @query.type
+
     if @query.valid?
       dns_lookup = DNSLookup.new(@query.domain, @query.type, @query.server_ip)
       @query.results = dns_lookup.run
