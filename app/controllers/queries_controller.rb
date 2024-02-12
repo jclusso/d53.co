@@ -3,10 +3,10 @@ class QueriesController < ApplicationController
 
   def index
     @queries = if params[:filter] == 'all'
-      Query.all.order(created_at: :desc)
+      Query.all
     else
-      my_queries
-    end
+      Query.where(session_id: session.id.to_s)
+    end.order(created_at: :desc)
   end
 
   def show
@@ -14,7 +14,7 @@ class QueriesController < ApplicationController
 
   def create
     @query = Query.new(query_params)
-    session[:last_query_type] = @query.type
+    @query.session_id = session.id.to_s
 
     if @query.valid?
       dns_lookup = DNSLookup.new(@query.domain, @query.type, @query.server_ip)
@@ -22,8 +22,7 @@ class QueriesController < ApplicationController
       @query.duration = dns_lookup.duration
       @query.save
 
-      session[:queries] ||= []
-      session[:queries].push(@query.id)
+      session[:last_query_type] = @query.type
 
       redirect_to @query
     else
