@@ -19,7 +19,7 @@
   }
 
   .form-field__input {
-    @apply text-lg font-medium bg-black rounded-md text-white border-neutral-800 transition cursor-pointer;
+    @apply text-lg font-medium bg-black rounded-md text-white border-neutral-800 transition;
     @apply focus-within:focus-within:ring-0 focus:border-neutral-400;
     @apply placeholder:text-neutral-800;
   }
