@@ -14,6 +14,9 @@ class QueriesTest < ApplicationSystemTestCase
   test "should destroy Query" do
     visit root_path
     create_query
+    # need to call twice since the session doesn't get created until it's been
+    # set at least once in tests. we set it with the type after creating.
+    create_query
     click_on "Remove", match: :first
     accept_alert
     assert_current_path root_path
