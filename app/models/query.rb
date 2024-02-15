@@ -26,7 +26,6 @@ class Query < ApplicationRecord
       'OpenDNS': '208.67.222.222',
       'Comodo': '8.26.56.26',
       'OpenNIC': '162.243.19.47',
-      'DNS.Watch': '84.200.69.80',
       'Yandex': '77.88.8.88',
       'CleanBrowsing': '185.228.168.9',
       'CyberGhost': '38.132.106.139',
