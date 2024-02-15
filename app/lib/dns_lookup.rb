@@ -54,7 +54,7 @@ class DNSLookup
         }
       when Resolv::DNS::Resource::IN::CAA
         {
-          flags: result.flags.to_s, tag: result.tag.to_s,
+          flags: result.flags.to_i, tag: result.tag.to_s,
           value: result.value.to_s, ttl: result.ttl
         }
       when Resolv::DNS::Resource::IN::PTR
