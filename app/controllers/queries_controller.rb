@@ -44,7 +44,10 @@ class QueriesController < ApplicationController
 
   def query_params
     pars = params.require(:query).permit(:domain, :type, :server)
-    pars[:domain].gsub!(/(^\w+:|^)\/\//, '') if pars[:domain].present?
+    if pars[:domain].present?
+      pars[:domain].gsub!(/(^\w+:|^)\/\//, '')
+      pars[:domain].gsub!(/\/.+/, '')
+    end
     pars
   end
 end
