@@ -26,7 +26,7 @@ class QueriesController < ApplicationController
 
       redirect_to @query
     else
-      render :new, status: :unprocessable_entity
+      render :index, status: :unprocessable_entity
     end
   end
 
