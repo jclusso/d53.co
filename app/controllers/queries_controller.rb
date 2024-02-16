@@ -17,8 +17,8 @@ class QueriesController < ApplicationController
     @query.session_id = session.id.to_s
 
     if @query.valid?
-      dns_lookup = DNSLookup.new(@query.domain, @query.type, @query.server_ip)
-      @query.results = dns_lookup.run
+      dns_lookup = DNSLookup.new(@query.server_ip)
+      @query.results = dns_lookup.run(@query.domain, @query.type)
       @query.duration = dns_lookup.duration
       @query.save
 

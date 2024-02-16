@@ -24,11 +24,7 @@
         <span class="text-lime-500 font-semibold">Results</span>
         <span class="text-neutral-500">From <%= @query.server_ip %></span>
       </div>
-      <% if @query.results.empty? %>
-        <span>No records returned</span>
-      <% else %>
-        <pre data-controller="highlight" class="mt-1"><code class="language-json"><%= JSON.pretty_generate(@query.results) %></code></pre>
-      <% end %>
+      <pre data-controller="highlight" class="mt-1"><code class="language-json"><%= JSON.pretty_generate(@query.results) %></code></pre>
     </div>
   </div>
 </div>

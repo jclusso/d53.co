@@ -16,18 +16,19 @@
 class Query < ApplicationRecord
   self.inheritance_column = nil
 
-  validates_presence_of :domain, :server, :type
-
   def self.servers
     {
       'Cloudflare': '1.1.1.1',
       'Google': '8.8.8.8',
       'Quad9': '9.9.9.9',
       'OpenDNS': '208.67.222.222',
+      'DNS.Watch': '84.200.69.80',
       'Comodo': '8.26.56.26',
       'OpenNIC': '162.243.19.47',
       'Yandex': '77.88.8.88',
       'CleanBrowsing': '185.228.168.9',
+      'UncensoredDNS': '91.239.100.100',
+      'FreeDNS': '45.33.97.5',
       'CyberGhost': '38.132.106.139',
       'Neustar': '156.154.70.5',
       'AdGuard': '94.140.14.140',
@@ -38,8 +39,10 @@ class Query < ApplicationRecord
   end
 
   def self.types
-    %i[A AAAA ANY CAA CNAME MX NS PTR SOA TXT]
+    %w[A AAAA ANY CAA CERT CNAME DNSKEY DS MX NS PTR SOA TXT URI]
   end
+
+  validates_presence_of :domain, :server, :type
 
   def server=(value)
     ip = self.class.servers[value.to_sym]
@@ -47,6 +50,12 @@ class Query < ApplicationRecord
 
     super(value)
     self.server_ip = ip
+  end
+
+  def type=(value)
+    return unless self.class.types.include?(value)
+
+    super(value)
   end
 
   def duration_ms

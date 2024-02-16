@@ -128,6 +128,8 @@ GEM
     debug (1.9.1)
       irb (~> 1.10)
       reline (>= 0.3.8)
+    dnsruby (1.70.0)
+      simpleidn (~> 0.2.1)
     dockerfile-rails (1.6.5)
       rails (>= 3.0.0)
     drb (2.2.0)
@@ -251,6 +253,8 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    simpleidn (0.2.1)
+      unf (~> 0.1.4)
     sprockets (4.2.1)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -275,6 +279,9 @@ GEM
       railties (>= 6.0.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.9.1)
     unicode-display_width (2.5.0)
     useragent (0.16.10)
     web-console (4.2.1)
@@ -294,6 +301,7 @@ GEM
 PLATFORMS
   aarch64-linux
   arm64-darwin-22
+  arm64-darwin-23
   x86_64-linux
 
 DEPENDENCIES
@@ -303,6 +311,7 @@ DEPENDENCIES
   brakeman
   capybara
   debug
+  dnsruby
   dockerfile-rails (>= 1.6)
   importmap-rails
   pg (~> 1.1)
@@ -319,7 +328,7 @@ DEPENDENCIES
   web-console
 
 RUBY VERSION
-   ruby 3.2.2p53
+   ruby 3.3.0p0
 
 BUNDLED WITH
    2.4.22

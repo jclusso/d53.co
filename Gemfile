@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.2.2"
+ruby "3.3.0"
 
 # Use main development branch of Rails
 gem "rails", github: "rails/rails", branch: "main"
@@ -74,3 +74,4 @@ end
 gem "tailwindcss-rails", "~> 2.3"
 
 gem "dockerfile-rails", ">= 1.6", group: :development
+gem "dnsruby"
