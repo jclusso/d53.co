@@ -1,24 +1,11 @@
-# README
+![image](public/meta-image.png)
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+D53 is a web based DNS lookup tool built on Ruby on Rails.
+Its purpose is to offer a user friendly version of the `dig`
+command, but with an intuitive and visually pleasing interface.
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+**Key Features**
+- Remembers the last record type you queried.
+- Keeps a log of your recent queries in the browser session.
+- Allows you to query from a list of top DNS providers.
+- Has PWA support so you can install on mobile and have a semi-native experience.
