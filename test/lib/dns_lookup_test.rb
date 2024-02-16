@@ -57,7 +57,7 @@ class DNSLookupTest < ActiveSupport::TestCase
 
   def test_cname
     assert_equal(
-      [{ type: 'CNAME', address: 'cnamev.testing.d53.co' }],
+      [{ type: 'CNAME', name: 'cnamev.testing.d53.co' }],
       get_answer('cname.testing.d53.co', 'CNAME')
     )
   end
@@ -119,14 +119,14 @@ class DNSLookupTest < ActiveSupport::TestCase
 
   def test_ptr_domain
     assert_equal(
-      [{ type: 'PTR', address: 'ptrv.testing.d53.co' }],
+      [{ type: 'PTR', name: 'ptrv.testing.d53.co' }],
       get_answer('ptr.testing.d53.co', 'PTR')
     )
   end
 
   def test_ptr_ip
     assert_equal(
-      [{ type: 'PTR', address: 'dns.google' }],
+      [{ type: 'PTR', name: 'dns.google' }],
       get_answer('8.8.4.4', 'PTR')
     )
   end
