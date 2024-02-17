@@ -18,8 +18,10 @@ one:
   domain: google.com
   type: A
   server: Cloudflare
+  results: {}
 
 two:
   domain: dig53.co
   type: NS
   server: Google
+  results: {}
