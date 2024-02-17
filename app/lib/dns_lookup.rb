@@ -13,7 +13,6 @@ class DNSLookup
       domain = "#{domain.split('.').reverse.join('.')}.in-addr.arpa"
     end
     response = resolver.query(domain, type)
-    @duration = (Time.monotonic_now - start_time) * 1000
 
     {
       json: {
@@ -33,6 +32,8 @@ class DNSLookup
     { json: { status: 'NOTIMP', from: @server }, zone: e.response.to_s }
   rescue Dnsruby::OtherResolvError
     { json: { status: 'OTHER ERROR', from: @server } }
+  ensure
+    @duration = (Time.monotonic_now - start_time) * 1000
   end
 
   private
