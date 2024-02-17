@@ -110,8 +110,6 @@ class DNSLookup
     end.compact
   end
 
-  private
-
   def encode_as_b64(string)
     return unless string
 

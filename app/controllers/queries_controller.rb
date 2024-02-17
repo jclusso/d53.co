@@ -7,6 +7,8 @@ class QueriesController < ApplicationController
     else
       Query.where(session_id: session.id.to_s)
     end.order(created_at: :desc)
+
+    @query = Query.new(@queries.first&.slice(:type, :server))
   end
 
   def show
@@ -23,8 +25,6 @@ class QueriesController < ApplicationController
       @query.results = dns_lookup.run(@query.domain, @query.type)
       @query.duration = dns_lookup.duration
       @query.save
-
-      session[:last_query_type] = @query.type
 
       redirect_to @query
     else
