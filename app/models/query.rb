@@ -43,6 +43,17 @@ class Query < ApplicationRecord
 
   validates_presence_of :domain, :server, :type
 
+  def domain=(value)
+    return unless value.present?
+
+    value.gsub!(/(^\w+:|^)\/\//, '') # remove protocols
+    value.gsub!(/\/.+/, '') # remove path
+    value.delete!(' ') # remove any spaces
+    value.downcase!
+
+    super(value)
+  end
+
   def server=(value)
     ip = self.class.servers[value.to_sym]
     return unless ip
