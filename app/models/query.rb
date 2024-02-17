@@ -27,7 +27,6 @@ class Query < ApplicationRecord
       'OpenNIC': '162.243.19.47',
       'Yandex': '77.88.8.88',
       'CleanBrowsing': '185.228.168.9',
-      'UncensoredDNS': '91.239.100.100',
       'FreeDNS': '45.33.97.5',
       'CyberGhost': '38.132.106.139',
       'Neustar': '156.154.70.5',

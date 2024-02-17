@@ -15,17 +15,24 @@ class DNSLookup
     response = resolver.query(domain, type)
     @duration = (Time.monotonic_now - start_time) * 1000
 
-    hash =  { status: response.rcode.to_s }
-    hash[:answer] = format_answer(response.answer) if response.answer.present?
-    hash.compact
-  rescue Dnsruby::NXDomain
-    { status: 'NXDOMAIN' }
-  rescue Dnsruby::ServFail
-    { status: 'SERVFAIL' }
+    {
+      json: {
+        status: response.rcode.to_s,
+        from: @server,
+        answer: (response.answer.present? ? format_answer(response.answer) : nil)
+      }.compact,
+      zone: response.to_s
+    }.compact
+  rescue Dnsruby::NXDomain => e
+    { json: { status: 'NXDOMAIN', from: @server }, zone: e.response.to_s }
+  rescue Dnsruby::ServFail => e
+    { json: { status: 'SERVFAIL', from: @server }, zone: e.response.to_s }
   rescue Dnsruby::ResolvTimeout
-    { status: 'TIMEOUT' }
-  rescue Dnsruby::NotImp
-    { status: 'NOT IMPLEMENTED' }
+    { json: { status: 'TIMEOUT', from: @server } }
+  rescue Dnsruby::NotImp => e
+    { json: { status: 'NOTIMP', from: @server }, zone: e.response.to_s }
+  rescue Dnsruby::OtherResolvError
+    { json: { status: 'OTHER ERROR', from: @server } }
   end
 
   private

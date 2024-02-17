@@ -1,7 +1,7 @@
 <%= form_with(model: Query.new(@query&.attributes), html: { class: 'grid gap-3' }) do |form| %>
   <%= form.text_field :domain, label: false, placeholder: 'd53.co',
     required: true, autocomplete: "off", autocorrect: "off",
-    autocapitalize: "off", spellcheck: "false" %>
+    autocapitalize: "off", spellcheck: "false", autofocus: @query&.domain.blank? %>
   <div class="grid grid-cols-3 gap-3">
     <%= form.select :type, Query.types, { selected: @query&.type || session[:last_query_type] },
       { class: 'form-field__input col-span-1' } %>

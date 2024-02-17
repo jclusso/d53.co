@@ -3,47 +3,58 @@ require 'test_helper'
 class DNSLookupTest < ActiveSupport::TestCase
 
   def test_noerror
-    assert_equal 'NOERROR', dns_lookup.run('d53.co', 'A')[:status]
+    response = dns_lookup.run('d53.co', 'A')
+    assert_equal(
+      { status: 'NOERROR', from: '1.1.1.1' }, response[:json].except(:answer)
+    )
+    assert_match 'NOERROR', response[:zone]
   end
 
   def test_servfail
-    assert_equal(
-      'SERVFAIL', dns_lookup.run('servfail.testing.d53.co', 'NS')[:status]
-    )
+    response = dns_lookup.run('servfail.testing.d53.co', 'NS')
+    assert_equal({ status: 'SERVFAIL', from: '1.1.1.1' }, response[:json])
+    assert_match 'SERVFAIL', response[:zone]
   end
 
   def test_timeout
-    assert_equal(
-      'TIMEOUT', dns_lookup.run('timeout.testing.d53.co', 'NS')[:status]
-    )
+    response = dns_lookup.run('timeout.testing.d53.co', 'NS')
+    assert_equal({ status: 'TIMEOUT', from: '1.1.1.1' }, response[:json])
+    assert_nil response[:zone]
   end
 
   def test_not_implemented
-    assert_equal('NOT IMPLEMENTED', dns_lookup.run('d53.co', 'ANY')[:status])
+    response = dns_lookup.run('d53.co', 'ANY')
+    assert_equal({ status: 'NOTIMP', from: '1.1.1.1' }, response[:json])
+    assert_match 'NOTIMP', response[:zone]
   end
 
+
   def test_a
-    assert_equal(
-      [{ type: 'A', address: '0.0.0.0' }],
-      get_answer('a.testing.d53.co', 'A')
-    )
+    response = get_answer('a.testing.d53.co', 'A')
+    assert_equal([{ type: 'A', address: '0.0.0.0' }], response[:json])
+    assert_match "a.testing.d53.co.\tIN\tA", response[:zone]
   end
 
   def test_aaaa
+    response = get_answer('aaaa.testing.d53.co', 'AAAA')
     assert_equal(
       [{ type: 'AAAA', address: '4149:8F20:F382:F7B2:45:1A0:A38F:34D9' }],
-      get_answer('aaaa.testing.d53.co', 'AAAA')
+      response[:json]
     )
+    assert_match "aaaa.testing.d53.co.\tIN\tAAAA", response[:zone]
   end
 
   def test_caa
+    response = get_answer('caa.testing.d53.co', 'CAA')
     assert_equal(
       [{ type: 'CAA', flag: 0, property_tag: 'issue', property_value: 'd53.co' }],
-      get_answer('caa.testing.d53.co', 'CAA')
+      response[:json]
     )
+    assert_match "caa.testing.d53.co.\tIN\tCAA", response[:zone]
   end
 
   def test_cert
+    response = get_answer('cert.testing.d53.co', 'CERT')
     assert_equal(
       [
         {
@@ -51,18 +62,22 @@ class DNSLookupTest < ActiveSupport::TestCase
           certtype: 'PKIX', keytag: 1
         }
       ],
-      get_answer('cert.testing.d53.co', 'CERT')
+      response[:json]
     )
+    assert_match "cert.testing.d53.co.\tIN\tCERT", response[:zone]
   end
 
   def test_cname
+    response = get_answer('cname.testing.d53.co', 'CNAME')
     assert_equal(
       [{ type: 'CNAME', name: 'cnamev.testing.d53.co' }],
-      get_answer('cname.testing.d53.co', 'CNAME')
+      response[:json]
     )
+    assert_match "cname.testing.d53.co.\tIN\tCNAME", response[:zone]
   end
 
   def test_dnskey
+    response = get_answer('cloudflare.com', 'DNSKEY')
     assert_equal(
       [
         {
@@ -76,11 +91,13 @@ class DNSLookupTest < ActiveSupport::TestCase
           key_tag: 2371, protocol: 3
         }
       ],
-      get_answer('cloudflare.com', 'DNSKEY')
+      response[:json]
     )
+    assert_match "cloudflare.com.\tIN\tDNSKEY", response[:zone]
   end
 
   def test_ds
+    response = get_answer('cloudflare.com', 'DS')
     assert_equal(
       [
         {
@@ -89,49 +106,58 @@ class DNSLookupTest < ActiveSupport::TestCase
           digest_type: 'SHA-256', key_tag: 2371
         }
       ],
-      get_answer('cloudflare.com', 'DS')
+      response[:json]
     )
+    assert_match "cloudflare.com.\tIN\tDS", response[:zone]
   end
 
   def test_hinfo
+    response = DNSLookup.new('8.8.8.8').run('cloudflare.com', 'ANY')
     assert_equal(
       [{ type: 'HINFO', data: 'RFC8482' }],
-      remove_ttl(DNSLookup.new('8.8.8.8').run('cloudflare.com', 'ANY')[:answer])
+      remove_ttl(response.dig(:json, :answer))
     )
+    assert_match "cloudflare.com.\tIN\tANY", response[:zone]
   end
 
   def test_mx
+    response = get_answer('mx.testing.d53.co', 'MX')
     assert_equal(
       [{ type: 'MX', exchange: 'mxv.testing.d53.co', preference: 0 }],
-      get_answer('mx.testing.d53.co', 'MX')
+      response[:json]
     )
+    assert_match "mx.testing.d53.co.\tIN\tMX", response[:zone]
   end
 
   def test_ns
+    response = get_answer('d53.co', 'NS')
     assert_equal(
       [
         { type: 'NS', name: 'eva.ns.cloudflare.com' },
         { type: 'NS', name: 'sid.ns.cloudflare.com' }
       ],
-      get_answer('d53.co', 'NS')
+      response[:json]
     )
+    assert_match "d53.co.\tIN\tNS", response[:zone]
   end
 
   def test_ptr_domain
+    response = get_answer('ptr.testing.d53.co', 'PTR')
     assert_equal(
       [{ type: 'PTR', name: 'ptrv.testing.d53.co' }],
-      get_answer('ptr.testing.d53.co', 'PTR')
+      response[:json]
     )
+    assert_match "ptr.testing.d53.co.\tIN\tPTR", response[:zone]
   end
 
   def test_ptr_ip
-    assert_equal(
-      [{ type: 'PTR', name: 'dns.google' }],
-      get_answer('8.8.4.4', 'PTR')
-    )
+    response = get_answer('8.8.4.4', 'PTR')
+    assert_equal([{ type: 'PTR', name: 'dns.google' }], response[:json])
+    assert_match "4.4.8.8.in-addr.arpa.\tIN\tPTR", response[:zone]
   end
 
   def test_soa
+    response = get_answer('d53.co', 'SOA')
     assert_equal(
       [
         {
@@ -140,22 +166,24 @@ class DNSLookupTest < ActiveSupport::TestCase
           rname: 'dns.cloudflare.com', serial: 2333549498
         }
       ],
-      get_answer('d53.co', 'SOA')
+      response[:json]
     )
+    assert_match "d53.co.\tIN\tSOA", response[:zone]
   end
 
   def test_txt
-    assert_equal(
-      [{ type: 'TXT', strings: ['test-text'] }],
-      get_answer('txt.testing.d53.co', 'TXT')
-    )
+    response = get_answer('txt.testing.d53.co', 'TXT')
+    assert_equal([{ type: 'TXT', strings: ['test-text'] }], response[:json])
+    assert_match "txt.testing.d53.co.\tIN\tTXT", response[:zone]
   end
 
   def test_uri
+    response = get_answer('uri.testing.d53.co', 'URI')
     assert_equal(
       [{ type: 'URI', priority: 0, target: 'uriv.testing.d53.co', weight: 0 }],
-      get_answer('uri.testing.d53.co', 'URI')
+      response[:json]
     )
+    assert_match "uri.testing.d53.co.\tIN\tURI", response[:zone]
   end
 
   private
@@ -165,7 +193,8 @@ class DNSLookupTest < ActiveSupport::TestCase
   end
 
   def get_answer(domain, type)
-    remove_ttl(dns_lookup.run(domain, type)[:answer])
+    response = dns_lookup.run(domain, type)
+    { json: remove_ttl(response.dig(:json, :answer)), zone: response[:zone] }
   end
 
   def remove_ttl(fields)

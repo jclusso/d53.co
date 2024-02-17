@@ -10,6 +10,8 @@ class QueriesController < ApplicationController
   end
 
   def show
+    @view = params[:view] || session[:last_query_view] || 'json'
+    session[:last_query_view] = @view
   end
 
   def create

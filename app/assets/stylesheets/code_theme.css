@@ -10,7 +10,7 @@ pre code.hljs {
 .hljs-template-variable,
 .hljs-type,
 .hljs-variable.language_ {
-  color: #ff7b72
+  @apply text-lime-500;
 }
 
 .hljs-title,
@@ -47,7 +47,7 @@ pre code.hljs {
 .hljs-code,
 .hljs-comment,
 .hljs-formula {
-  color: #8b949e
+  @apply text-neutral-600;
 }
 
 .hljs-name,

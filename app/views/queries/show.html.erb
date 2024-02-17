@@ -1,6 +1,6 @@
 <div class="space-y-8">
   <%= render 'form' %>
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-black p-4 rounded-lg sm:text-lg border border-neutral-800">
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-black p-4 rounded-lg sm:text-lg border-2 border-neutral-800">
     <div class="flex flex-col sm:col-span-3">
       <span class="text-lime-500 font-semibold">Domain</span>
       <span><%= @query.domain %></span>
@@ -18,15 +18,33 @@
       <span><%= @query.duration_ms %></span>
     </div>
   </div>
-  <div class="bg-black p-4 rounded-lg sm:text-lg border border-neutral-800">
+  <%= turbo_frame_tag :results, class: "block bg-black p-4 rounded-lg sm:text-lg border-2 border-neutral-800 overflow-hidden" do %>
+    <%
+      def button_classes(button)
+        class_names(
+          "px-3 py-1 tracking-wider",
+          "bg-lime-500 text-black font-semibold" => @view == button,
+          "text-neutral-300 font-medium" => @view != button
+        )
+      end
+    %>
     <div class="flex flex-col">
-      <div class="flex justify-between">
+      <div class="flex justify-between items-center">
         <span class="text-lime-500 font-semibold">Results</span>
-        <span class="text-neutral-500">From <%= @query.server_ip %></span>
+        <% if @query.results.key?('json') && @query.results.key?('zone') %>
+          <div class="flex text-sm rounded-lg overflow-hidden border border-lime-500" data-turbo-prefetch="false">
+            <%= link_to 'JSON', query_path(@query, view: :json), class: button_classes('json') %>
+            <%= link_to 'ZONE', query_path(@query, view: :zone), class: button_classes('zone') %>
+          </div>
+        <% end %>
       </div>
-      <pre data-controller="highlight" class="mt-1"><code class="language-json"><%= JSON.pretty_generate(@query.results) %></code></pre>
+      <% if @query.results.key?('zone') && @view == 'zone' %>
+        <pre data-controller="highlight" class="mt-1 opacity-0 transition"><code class="language-dns"><%= @query.results['zone'] %></code></pre>
+      <% else %>
+        <pre data-controller="highlight" class="mt-1 opacity-0 transition"><code class="language-json"><%= JSON.pretty_generate(@query.results['json'] || @query.results) %></code></pre>
+      <% end %>
     </div>
-  </div>
+  <% end %>
 </div>
 <div class="flex p-4 text-xs text-neutral-600 justify-between">
   <% if @query.session_id == session.id.to_s %>
