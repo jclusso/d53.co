@@ -47,22 +47,26 @@ class Query < ApplicationRecord
     return unless value.present?
 
     value.gsub!(/(^\w+:|^)\/\//, '') # remove protocols
-    value.gsub!(/\/.+/, '') # remove path
+    value.gsub!(/\/(?:[^\/]|\/(?!$))*$/, '') # remove path
     value.delete!(' ') # remove any spaces
     value.downcase!
 
     super(value)
   end
+  alias_method :domain_name=, :domain=
 
   def server=(value)
-    ip = self.class.servers[value.to_sym]
-    return unless ip
+    server_hash = self.class.servers.find do |name, ip|
+      name.to_s.downcase == value.downcase
+    end
+    return unless server_hash
 
-    super(value)
-    self.server_ip = ip
+    super(server_hash.first)
+    self.server_ip = server_hash.last
   end
 
   def type=(value)
+    value.upcase!
     return unless self.class.types.include?(value)
 
     super(value)
@@ -70,6 +74,17 @@ class Query < ApplicationRecord
 
   def duration_ms
     "#{(duration || 0).to_fs(:delimited)} ms"
+  end
+
+  def do_dns_lookup!
+    dns_lookup = DNSLookup.new(server_ip)
+    self.results = dns_lookup.run(domain, type)
+    self.duration = dns_lookup.duration
+    self
+  end
+
+  def redirect_params
+    { domain_name: domain, type: type.downcase, server: server.downcase }
   end
 
 end

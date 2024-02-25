@@ -14,7 +14,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-neutral-800">
-          <%= render @queries.limit(25) %>
+          <%= render @queries.limit(@limit) %>
         </tbody>
       </table>
     </div>

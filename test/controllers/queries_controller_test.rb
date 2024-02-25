@@ -11,13 +11,14 @@ class QueriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create query" do
+    domain = Faker::Internet.unique.domain_name
     assert_difference("Query.count") do
       post queries_url, params: {
-        query: { domain: 'create-google.com', server: 'Cloudflare', type: 'A' }
+        query: { domain: domain, server: 'Cloudflare', type: 'A' }
       }
     end
 
-    assert_redirected_to query_url(Query.find_by(domain: 'create-google.com'))
+    assert_redirected_to query_url(Query.find_by(domain: domain))
   end
 
   test "should show query" do

@@ -9,6 +9,7 @@ class QueriesController < ApplicationController
     end.order(created_at: :desc)
 
     @query = Query.new(@queries.first&.slice(:type, :server))
+    @limit = params[:limit].to_i.clamp(25, 500)
   end
 
   def show
@@ -21,9 +22,7 @@ class QueriesController < ApplicationController
     @query.session_id = session.id.to_s
 
     if @query.valid?
-      dns_lookup = DNSLookup.new(@query.server_ip)
-      @query.results = dns_lookup.run(@query.domain, @query.type)
-      @query.duration = dns_lookup.duration
+      @query.do_dns_lookup!
       @query.save
 
       redirect_to @query

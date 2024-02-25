@@ -12,4 +12,7 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "queries#index"
   resources :queries, only: %i[index create show destroy]
+
+  get "((:server)/:type)/:domain_name" => "redirect#create",
+    constraints: { domain_name: /([^\/]+?)(?=\.json|\.html|$|\/)/ }, as: :redirect
 end
