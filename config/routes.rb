@@ -13,6 +13,10 @@ Rails.application.routes.draw do
   root "queries#index"
   resources :queries, only: %i[index create show destroy]
 
-  get "((:server)/:type)/:domain_name" => "redirect#create",
-    constraints: { domain_name: /([^\/]+?)(?=\.json|\.html|$|\/)/ }, as: :redirect
+  get "(:server)/:type/:domain_name" => "redirect#create",
+    constraints: {
+      server: Regexp.new(Query.servers.keys.join("|"), "i"),
+      type: Regexp.new(Query.types.join("|"), "i"),
+      domain_name: /([^\/]+?)(?=\.json|\.html|$|\/)/
+    }, as: :redirect
 end
