@@ -18,6 +18,7 @@
       <span><%= @query.duration_ms %></span>
     </div>
   </div>
+
   <%= turbo_frame_tag :results, class: "block bg-black p-4 rounded-lg sm:text-lg border-2 border-neutral-800 overflow-hidden" do %>
     <%
       def button_classes(button)
@@ -39,13 +40,25 @@
         <% end %>
       </div>
       <% if @query.results.key?('zone') && @view == 'zone' %>
-        <pre data-controller="highlight" class="mt-1 opacity-0 transition"><code class="language-dns"><%= @query.results['zone'] %></code></pre>
+        <pre data-controller="highlight" data-highlight-server-value="<%= @query.server.downcase %>" class="mt-1 opacity-0 transition"><code class="language-dns"><%= @query.results['zone'] %></code></pre>
       <% else %>
-        <pre data-controller="highlight" class="mt-1 opacity-0 transition"><code class="language-json"><%= JSON.pretty_generate(@query.results['json'] || @query.results) %></code></pre>
+        <pre data-controller="highlight" data-highlight-server-value="<%= @query.server.downcase %>" class="mt-1 opacity-0 transition"><code class="language-json"><%= JSON.pretty_generate(@query.results['json'] || @query.results) %></code></pre>
       <% end %>
     </div>
   <% end %>
+
+  <div class="grid grid-cols-1 gap-3 bg-black p-4 rounded-lg sm:text-lg border-2 border-neutral-800">
+    <div class="flex flex-col">
+      <span class="text-lime-500 font-semibold">This Lookup</span>
+      <%= text_field_tag :query, query_url(@query), class: "form-field__input mt-2", readonly: true, onclick: "this.select();" %>
+    </div>
+    <div class="flex flex-col">
+      <span class="text-lime-500 font-semibold">Realtime Lookup</span>
+      <%= text_field_tag :realtime_query, redirect_url(@query.redirect_params), class: "form-field__input mt-2", readonly: true, onclick: "this.select();" %>
+    </div>
+  </div>
 </div>
+
 <div class="flex p-4 text-xs text-neutral-600 justify-between">
   <% if @query.session_id == session.id.to_s %>
     <%= button_to "Remove", query_path(@query), method: :delete,
