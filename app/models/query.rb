@@ -48,6 +48,7 @@ class Query < ApplicationRecord
 
     value.gsub!(/(^\w+:|^)\/\//, '') # remove protocols
     value.gsub!(/\/(?:[^\/]|\/(?!$))*$/, '') # remove path
+    value.gsub!(/\.$/, '') # remove trailing period
     value.delete!(' ') # remove any spaces
     value.downcase!
 

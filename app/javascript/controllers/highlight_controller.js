@@ -30,10 +30,18 @@ export default class extends Controller {
       );
     }
 
-    const stringRegex = /(\t|\n)([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})/i;
+    const stringRegex = /(\t|\n)([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}\.)/i;
     while ((match = stringRegex.exec(this.element.innerHTML)) !== null) {
       this.element.innerHTML = this.element.innerHTML.replace(
         match[0], `${match[1]}${this.#recordLink(match[2])}`
+      );
+    }
+
+    const spaceSurroundedString = /(\s)([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}\.\s)/i;
+    while ((match = spaceSurroundedString.exec(this.element.innerHTML)) !== null) {
+      console.log(match)
+      this.element.innerHTML = this.element.innerHTML.replace(
+        match[0], ` ${match[1]}${this.#recordLink(match[2].replace(/\s/g, ''))} `
       );
     }
   }
@@ -41,12 +49,12 @@ export default class extends Controller {
   #recordLink(record) {
     const ipv4Regex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
     const ipv6Regex = /(?:^|(?<=\s))(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(?=\s|$)/;
-    const domainRegex = /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}$/i;
+    const domainRegex = /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}\.$/i;
 
     if (ipv4Regex.test(record) || ipv6Regex.test(record)) {
-      return `<a href="/${this.serverValue}/ptr/${record}" class="underline hover:no-underline">${record}</a>`;
+      return `<a href="/${this.serverValue}/ptr/${record.replace(/\.$/, '')}" class="underline hover:no-underline">${record}</a>`;
     } else if (domainRegex.test(record)) {
-      return `<a href="/${this.serverValue}/a/${record}" class="underline hover:no-underline">${record}</a>`;
+      return `<a href="/${this.serverValue}/a/${record.replace(/\.$/, '')}" class="underline hover:no-underline">${record}</a>`;
     } else {
       return record;
     }
