@@ -41,7 +41,7 @@ export default class extends Controller {
     const ipv4Regex = /\s(?:[0-9]{1,3}\.){3}[0-9]{1,3}\s/;
     while ((match = ipv4Regex.exec(this.element.innerHTML)) !== null) {
       this.element.innerHTML = this.element.innerHTML.replace(
-        match[0], ` ${this.#recordLink(match[0])} `
+        match[0], ` ${this.#recordLink(match[0].replace(/\s/g, ''))} `
       );
     }
   }
@@ -50,7 +50,6 @@ export default class extends Controller {
     const ipv4Regex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
     const ipv6Regex = /(?:^|(?<=\s))(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(?=\s|$)/;
     const domainRegex = /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}\.?$/i;
-    record = record.replace(/\s/g, '');
 
     if (ipv4Regex.test(record) || ipv6Regex.test(record)) {
       return `<a href="/${this.serverValue}/ptr/${record.replace(/\.$/, '')}" class="underline hover:no-underline">${record}</a>`;
