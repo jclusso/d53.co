@@ -77,3 +77,5 @@ gem "tailwindcss-rails", "~> 2.3"
 gem "dockerfile-rails", ">= 1.6", group: :development
 gem "dnsruby"
 gem "minitest-retry"
+gem "sentry-ruby", "~> 5.16"
+gem "sentry-rails", "~> 5.16"
