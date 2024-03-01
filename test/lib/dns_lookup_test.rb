@@ -17,8 +17,8 @@ class DNSLookupTest < ActiveSupport::TestCase
   end
 
   def test_timeout
-    response = dns_lookup.run('timeout.testing.d53.co', 'NS')
-    assert_equal({ status: 'TIMEOUT', from: '1.1.1.1' }, response[:json])
+    response = DNSLookup.new('1.2.3.4').run('timeout.testing.d53.co', 'NS')
+    assert_equal({ status: 'TIMEOUT', from: '1.2.3.4' }, response[:json])
     assert_nil response[:zone]
   end
 
@@ -115,7 +115,7 @@ class DNSLookupTest < ActiveSupport::TestCase
     response = DNSLookup.new('8.8.8.8').run('cloudflare.com', 'ANY')
     assert_equal(
       [{ type: 'HINFO', data: 'RFC8482' }],
-      remove_ttl(response.dig(:json, :answer))
+      remove_dynamic(response.dig(:json, :answer))
     )
     assert_match "cloudflare.com.\tIN\tANY", response[:zone]
   end
@@ -163,7 +163,7 @@ class DNSLookupTest < ActiveSupport::TestCase
         {
           type: 'SOA', expire: 604800, minimum: 1800,
           mname: 'eva.ns.cloudflare.com', refresh: 10000, retry: 2400,
-          rname: 'dns.cloudflare.com', serial: 2333549498
+          rname: 'dns.cloudflare.com'
         }
       ],
       response[:json]
@@ -194,11 +194,11 @@ class DNSLookupTest < ActiveSupport::TestCase
 
   def get_answer(domain, type)
     response = dns_lookup.run(domain, type)
-    { json: remove_ttl(response.dig(:json, :answer)), zone: response[:zone] }
+    { json: remove_dynamic(response.dig(:json, :answer)), zone: response[:zone] }
   end
 
-  def remove_ttl(fields)
-    fields.map { |answer| answer.except(:ttl) }
+  def remove_dynamic(fields)
+    fields.map { |answer| answer.except(:ttl, :serial) }
   end
 
 end
