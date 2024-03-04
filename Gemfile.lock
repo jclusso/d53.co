@@ -130,7 +130,7 @@ GEM
       reline (>= 0.3.8)
     dnsruby (1.70.0)
       simpleidn (~> 0.2.1)
-    dockerfile-rails (1.6.5)
+    dockerfile-rails (1.6.6)
       rails (>= 3.0.0)
     drb (2.2.1)
     erubi (1.12.0)
