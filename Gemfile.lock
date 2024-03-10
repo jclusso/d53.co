@@ -111,6 +111,8 @@ GEM
       msgpack (~> 1.2)
     brakeman (6.1.2)
       racc
+    bugsnag (6.26.3)
+      concurrent-ruby (~> 1.0)
     builder (3.2.4)
     capybara (3.40.0)
       addressable
@@ -255,11 +257,6 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    sentry-rails (5.16.1)
-      railties (>= 5.0)
-      sentry-ruby (~> 5.16.1)
-    sentry-ruby (5.16.1)
-      concurrent-ruby (~> 1.0, >= 1.0.2)
     simpleidn (0.2.1)
       unf (~> 0.1.4)
     sprockets (4.2.1)
@@ -316,6 +313,7 @@ DEPENDENCIES
   annotate
   bootsnap
   brakeman
+  bugsnag (~> 6.26)
   capybara
   debug
   dnsruby
@@ -329,8 +327,6 @@ DEPENDENCIES
   redis (>= 4.0.1)
   rubocop-rails-omakase
   selenium-webdriver
-  sentry-rails (~> 5.16)
-  sentry-ruby (~> 5.16)
   sprockets-rails
   stimulus-rails
   tailwindcss-rails (~> 2.3)
