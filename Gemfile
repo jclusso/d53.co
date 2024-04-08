@@ -72,7 +72,7 @@ group :test do
   gem "faker"
 end
 
-gem "tailwindcss-rails", "~> 2.3"
+gem "tailwindcss-rails", "~> 2.4"
 
 gem "dockerfile-rails", ">= 1.6", group: :development
 gem "dnsruby"
