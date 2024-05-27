@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: cd31b164b1975abfe6adb9af8e0edc8bea7ce1b0
+  revision: f6918a5b5d0b8c3a700513c2624cc195e0a78d14
   branch: main
   specs:
     actioncable (8.0.0.alpha)
@@ -163,7 +163,7 @@ GEM
     marcel (1.0.4)
     matrix (0.4.2)
     mini_mime (1.1.5)
-    minitest (5.23.0)
+    minitest (5.23.1)
     minitest-retry (0.2.2)
       minitest (>= 5.0)
     msgpack (1.7.2)
@@ -211,7 +211,7 @@ GEM
       nokogiri (~> 1.14)
     rainbow (3.1.1)
     rake (13.2.1)
-    rdoc (6.6.3.1)
+    rdoc (6.7.0)
       psych (>= 4.0.0)
     redis (5.2.0)
       redis-client (>= 0.22.0)
@@ -302,7 +302,7 @@ GEM
     websocket-extensions (0.1.5)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.6.14)
+    zeitwerk (2.6.15)
 
 PLATFORMS
   aarch64-linux
