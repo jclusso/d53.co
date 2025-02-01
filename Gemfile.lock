@@ -170,7 +170,7 @@ GEM
     matrix (0.4.2)
     mini_mime (1.1.5)
     minitest (5.25.4)
-    minitest-retry (0.2.3)
+    minitest-retry (0.2.5)
       minitest (>= 5.0)
     msgpack (1.7.2)
     net-imap (0.5.4)
