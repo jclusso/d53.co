@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 6d63b1592ca3b411e657586c859bda97610ae7f0
+  revision: 22b86f371464e300d43194d7fc0c312ac1f387a3
   branch: main
   specs:
     actioncable (8.1.0.alpha)
@@ -177,7 +177,7 @@ GEM
     minitest-retry (0.2.5)
       minitest (>= 5.0)
     msgpack (1.7.2)
-    net-imap (0.5.7)
+    net-imap (0.5.8)
       date
       net-protocol
     net-pop (0.1.2)
@@ -199,7 +199,7 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.4.0)
-    psych (5.2.3)
+    psych (5.2.4)
       date
       stringio
     public_suffix (5.0.4)
