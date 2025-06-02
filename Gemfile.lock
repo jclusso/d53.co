@@ -102,7 +102,7 @@ GEM
   specs:
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
-    amazing_print (1.7.2)
+    amazing_print (1.8.1)
     annotate (2.6.5)
       activerecord (>= 2.3.0)
       rake (>= 0.8.7)
