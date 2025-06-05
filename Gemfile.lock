@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 6d63b1592ca3b411e657586c859bda97610ae7f0
+  revision: 0ac3fba6ee5f7d1680024a4925eee6069095487b
   branch: main
   specs:
     actioncable (8.1.0.alpha)
@@ -34,6 +34,7 @@ GIT
       rails-html-sanitizer (~> 1.6)
       useragent (~> 0.16)
     actiontext (8.1.0.alpha)
+      action_text-trix (~> 2.1.15)
       actionpack (= 8.1.0.alpha)
       activerecord (= 8.1.0.alpha)
       activestorage (= 8.1.0.alpha)
@@ -100,6 +101,8 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
+    action_text-trix (2.1.15)
+      railties
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
     amazing_print (1.8.1)
@@ -178,7 +181,7 @@ GEM
     minitest-retry (0.2.5)
       minitest (>= 5.0)
     msgpack (1.8.0)
-    net-imap (0.5.7)
+    net-imap (0.5.8)
       date
       net-protocol
     net-pop (0.1.2)
@@ -305,7 +308,7 @@ GEM
       bindex (>= 0.4.0)
       railties (>= 6.0.0)
     websocket (1.2.11)
-    websocket-driver (0.7.7)
+    websocket-driver (0.8.0)
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
