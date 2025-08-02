@@ -77,4 +77,4 @@ gem "tailwindcss-rails", "~> 4.2"
 gem "dockerfile-rails", ">= 1.6", group: :development
 gem "dnsruby"
 gem "minitest-retry"
-gem "bugsnag", "~> 6.27"
+gem "bugsnag", "~> 6.28"
