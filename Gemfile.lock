@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 6d63b1592ca3b411e657586c859bda97610ae7f0
+  revision: 74092090e7b096904cf0c15db7dfb31970f724ab
   branch: main
   specs:
     actioncable (8.1.0.alpha)
@@ -34,6 +34,7 @@ GIT
       rails-html-sanitizer (~> 1.6)
       useragent (~> 0.16)
     actiontext (8.1.0.alpha)
+      action_text-trix (~> 2.1.15)
       actionpack (= 8.1.0.alpha)
       activerecord (= 8.1.0.alpha)
       activestorage (= 8.1.0.alpha)
@@ -95,11 +96,14 @@ GIT
       rackup (>= 1.0.0)
       rake (>= 12.2)
       thor (~> 1.0, >= 1.2.2)
+      tsort (>= 0.2)
       zeitwerk (~> 2.6)
 
 GEM
   remote: https://rubygems.org/
   specs:
+    action_text-trix (2.1.15)
+      railties
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
     amazing_print (1.8.1)
@@ -289,6 +293,7 @@ GEM
     tailwindcss-ruby (4.1.11)
     thor (1.4.0)
     timeout (0.4.3)
+    tsort (0.2.0)
     turbo-rails (2.0.16)
       actionpack (>= 7.1.0)
       railties (>= 7.1.0)
