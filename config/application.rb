@@ -1,7 +1,6 @@
 require_relative "boot"
 
 require "rails/all"
-require 'resolv'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -10,7 +9,7 @@ Bundler.require(*Rails.groups)
 module D53Co
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.2
+    config.load_defaults 8.1
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -24,7 +23,5 @@ module D53Co
     #
     config.time_zone = "Eastern Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
-
-    config.action_view.field_error_proc = ->(html_tag, instance) { html_tag }
   end
 end
