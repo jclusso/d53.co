@@ -46,13 +46,14 @@ class Query < ApplicationRecord
   def domain=(value)
     return unless value.present?
 
-    value.gsub!(/(^\w+:|^)\/\//, '') # remove protocols
-    value.gsub!(/\/(?:[^\/]|\/(?!$))*$/, '') # remove path
-    value.gsub!(/\.$/, '') # remove trailing period
-    value.delete!(' ') # remove any spaces
-    value.downcase!
+    cleaned_value = value.
+      gsub(/(^\w+:|^)\/\//, ''). # remove protocols
+      gsub(/\/(?:[^\/]|\/(?!$))*$/, ''). # remove path
+      gsub(/\.$/, ''). # remove trailing period
+      delete(' '). # remove any spaces
+      downcase
 
-    super(value)
+    super(cleaned_value)
   end
   alias_method :domain_name=, :domain=
 
@@ -67,10 +68,10 @@ class Query < ApplicationRecord
   end
 
   def type=(value)
-    value.upcase!
-    return unless self.class.types.include?(value)
+    cleaned_value = value.upcase
+    return unless self.class.types.include?(cleaned_value)
 
-    super(value)
+    super(cleaned_value)
   end
 
   def duration_ms
