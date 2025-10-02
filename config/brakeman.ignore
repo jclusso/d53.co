@@ -3,13 +3,13 @@
     {
       "warning_type": "Dangerous Eval",
       "warning_code": 13,
-      "fingerprint": "12e4ff689f9c02241c7e337c5ffa99a65c941954b45ec880df8ea398d3307f4f",
+      "fingerprint": "7e860fa72873a9d7aee1bbee32ab27e5199d72a6e67b865f89bb5229e162a396",
       "check_name": "Evaluation",
       "message": "Dynamic string evaluated as code",
       "file": "app/helpers/application_form_builder.rb",
-      "line": 7,
+      "line": 3,
       "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
-      "code": "class_eval(\"      def #{selector}(method, options)\\n        default_options = { class: \\\"form-field__input\\\" }\\n        merged_options = default_options.merge(options)\\n\\n        return super(method, merged_options) unless options[:label]\\n\\n        @template.form_field_tag do\\n          label(method, *label_args(options)) +\\n          super(method, merged_options.except(:label))\\n        end\\n      end\\n\", \"app/helpers/application_form_builder.rb\", (7 + 1))",
+      "code": "class_eval(\"      def #{selector}(method, options)\\n        default_options = { class: \\\"form-field__input\\\" }\\n        merged_options = default_options.merge(options)\\n\\n        return super(method, merged_options) unless options[:label]\\n\\n        @template.form_field_tag do\\n          label(method, *label_args(options)) +\\n          super(method, merged_options.except(:label))\\n        end\\n      end\\n\", \"app/helpers/application_form_builder.rb\", (3 + 1))",
       "render_path": null,
       "location": {
         "type": "method",
@@ -25,5 +25,5 @@
       "note": ""
     }
   ],
-  "brakeman_version": "7.0.0"
+  "brakeman_version": "7.1.0"
 }
