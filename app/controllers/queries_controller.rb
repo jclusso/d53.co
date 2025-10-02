@@ -3,10 +3,10 @@ class QueriesController < ApplicationController
 
   def index
     @queries = if params[:filter] == 'all'
-      Query.all
-    else
-      Query.where(session_id: session.id.to_s)
-    end.order(created_at: :desc)
+                 Query.all
+               else
+                 Query.where(session_id: session.id.to_s)
+               end.order(created_at: :desc)
 
     @query = Query.new(@queries.first&.slice(:type, :server))
     @limit = params[:limit].to_i.clamp(25, 500)
