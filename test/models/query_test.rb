@@ -38,7 +38,7 @@ class QueryTest < ActiveSupport::TestCase
     assert_equal 'd53.com', query.domain
   end
 
-  test 'domain setter will strip protocol, path, and spaces togather' do
+  test 'domain setter will strip protocol, path, and spaces together' do
     query = Query.new(domain: 'http://d53.com/this path')
     assert_equal 'd53.com', query.domain
   end
