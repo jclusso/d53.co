@@ -1,5 +1,4 @@
 class RedirectController < ApplicationController
-
   def create
     query = Query.new(params.permit(:server, :type, :domain_name))
     query.server ||= 'Cloudflare'
@@ -14,5 +13,4 @@ class RedirectController < ApplicationController
       not_found
     end
   end
-
 end

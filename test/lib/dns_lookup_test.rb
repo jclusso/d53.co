@@ -1,7 +1,6 @@
 require 'test_helper'
 
 class DNSLookupTest < ActiveSupport::TestCase
-
   def test_noerror
     response = dns_lookup.run('d53.co', 'A')
     assert_equal(
@@ -27,7 +26,6 @@ class DNSLookupTest < ActiveSupport::TestCase
     assert_equal({ status: 'NOTIMP', from: '1.1.1.1' }, response[:json])
     assert_match 'NOTIMP', response[:zone]
   end
-
 
   def test_a
     response = get_answer('a.testing.d53.co', 'A')
@@ -200,5 +198,4 @@ class DNSLookupTest < ActiveSupport::TestCase
   def remove_dynamic(fields)
     fields.map { |answer| answer.except(:ttl, :serial) }
   end
-
 end

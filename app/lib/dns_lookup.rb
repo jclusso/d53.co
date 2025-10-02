@@ -1,5 +1,4 @@
 class DNSLookup
-
   attr_reader :duration
 
   def initialize(server)
@@ -58,7 +57,7 @@ class DNSLookup
           keytag: answer.keytag
         )
       when Dnsruby::RR::IN::CNAME
-        hash.merge!(name: answer.domainname.to_s)
+        hash[:name] = answer.domainname.to_s
       when Dnsruby::RR::IN::DNSKEY
         hash.merge!(
           algorithm: answer.algorithm&.to_s,
@@ -77,10 +76,8 @@ class DNSLookup
       when Dnsruby::RR::IN::HINFO
         hash[:data] = answer.cpu
       when Dnsruby::RR::IN::MX
-        hash.merge!(
-          exchange: answer.exchange.to_s,
-          preference: answer.preference
-        )
+        hash[:exchange] = answer.exchange.to_s
+        hash[:preference] = answer.preference
       when Dnsruby::RR::IN::NS
         hash[:name] = answer.domainname.to_s
       when Dnsruby::RR::IN::PTR
@@ -121,5 +118,4 @@ class DNSLookup
   rescue IPAddr::InvalidAddressError
     false
   end
-
 end

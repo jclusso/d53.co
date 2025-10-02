@@ -58,7 +58,7 @@ class Query < ApplicationRecord
 
   def server=(value)
     server_hash = self.class.servers.find do |name, ip|
-      name.to_s.downcase == value.downcase
+      name.to_s.casecmp?(value)
     end
     return unless server_hash
 
@@ -87,5 +87,4 @@ class Query < ApplicationRecord
   def redirect_params
     { domain_name: domain, type: type.downcase, server: server.downcase }
   end
-
 end

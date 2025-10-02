@@ -1,11 +1,11 @@
-require "test_helper"
+require 'test_helper'
 
 class RedirectControllerTest < ActionDispatch::IntegrationTest
   setup do
     @domain = Faker::Internet.unique.domain_name
   end
 
-  test "should create query with server, type, and domain" do
+  test 'should create query with server, type, and domain' do
     get "/google/mx/#{@domain}"
 
     assert_redirected_to query_path(new_query)
@@ -14,7 +14,7 @@ class RedirectControllerTest < ActionDispatch::IntegrationTest
     assert_equal @domain, new_query.domain
   end
 
-  test "should create query with type and domain" do
+  test 'should create query with type and domain' do
     get "/mx/#{@domain}"
 
     assert_redirected_to query_path(new_query)
@@ -23,27 +23,27 @@ class RedirectControllerTest < ActionDispatch::IntegrationTest
     assert_equal @domain, new_query.domain
   end
 
-  test "should 404 unless type and domain" do
+  test 'should 404 unless type and domain' do
     get "/#{@domain}"
     assert_response :not_found
   end
 
-  test "should 404 unless valid type" do
+  test 'should 404 unless valid type' do
     get "/x/#{@domain}"
     assert_response :not_found
   end
 
-  test "should 404 unless server" do
+  test 'should 404 unless server' do
     get "/flarecloud/a/#{@domain}"
     assert_response :not_found
   end
 
-  test "should allow case insensitive type" do
+  test 'should allow case insensitive type' do
     get "/A/#{@domain}"
     assert_response :redirect
   end
 
-  test "should allow case insensitive server" do
+  test 'should allow case insensitive server' do
     get "/GoOgLe/a/#{@domain}"
     assert_response :redirect
   end

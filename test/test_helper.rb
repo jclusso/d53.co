@@ -1,7 +1,7 @@
-ENV["RAILS_ENV"] ||= "test"
-require_relative "../config/environment"
-require "rails/test_help"
-require "minitest/retry"
+ENV['RAILS_ENV'] ||= 'test'
+require_relative '../config/environment'
+require 'rails/test_help'
+require 'minitest/retry'
 Minitest::Retry.use!
 
 module ActiveSupport
