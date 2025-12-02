@@ -137,7 +137,7 @@ GEM
     debug (1.11.0)
       irb (~> 1.10)
       reline (>= 0.3.8)
-    dnsruby (1.73.0)
+    dnsruby (1.73.1)
       base64 (>= 0.2)
       logger (~> 1.6)
       simpleidn (~> 0.2.1)
