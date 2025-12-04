@@ -184,6 +184,18 @@ class DNSLookupTest < ActiveSupport::TestCase
     assert_match "uri.testing.d53.co.\tIN\tURI", response[:zone]
   end
 
+  def test_dnssec_success
+    response = get_answer('dnssec-tools.org', 'A')
+    assert response[:json].any? { |a| a[:type] == 'A' }
+    refute dns_lookup.dnssec_failed
+  end
+
+  def test_dnssec_failure
+    response = get_answer('dnssec-failed.org', 'A')
+    assert response[:json].any? { |a| a[:type] == 'A' }
+    assert dns_lookup.dnssec_failed
+  end
+
   private
 
   def dns_lookup

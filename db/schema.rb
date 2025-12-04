@@ -10,20 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_02_12_142204) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_04_042917) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "queries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "dnssec_failed"
     t.string "domain"
-    t.string "type"
+    t.integer "duration"
+    t.json "results", default: "{}", null: false
     t.string "server"
     t.string "server_ip"
-    t.json "results", default: "{}", null: false
-    t.integer "duration"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "session_id"
+    t.string "type"
+    t.datetime "updated_at", null: false
   end
-
 end
