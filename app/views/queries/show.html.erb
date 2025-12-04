@@ -19,6 +19,14 @@
     </div>
   </div>
 
+  <% if @query.dnssec_failed? %>
+    <p class="p-4 bg-rose-600 text-rose-200 rounded-lg">
+      The DNS response failed DNSSEC validation. This is often caused by expired
+      signatures, misconfigured DNS zones, or key management issues. In rare
+      cases, it could indicate a security issue such as DNS spoofing.
+    </p>
+  <% end %>
+
   <%= turbo_frame_tag :results, class: "block bg-black p-4 rounded-lg sm:text-lg border-2 border-neutral-800 overflow-hidden" do %>
     <%
       def button_classes(button)

@@ -1,5 +1,5 @@
 class DNSLookup
-  attr_reader :duration
+  attr_reader :duration, :dnssec_failed
 
   def initialize(server)
     @server = server
@@ -7,7 +7,7 @@ class DNSLookup
 
   def run(domain, type)
     start_time = Time.monotonic_now
-    resolver = Dnsruby::Resolver.new(do_caching: false, nameserver: @server)
+    resolver ||= Dnsruby::Resolver.new(do_caching: false, nameserver: @server)
     if type == 'PTR' && is_ip?(domain)
       domain = "#{domain.split('.').reverse.join('.')}.in-addr.arpa"
     end
@@ -24,6 +24,15 @@ class DNSLookup
   rescue Dnsruby::NXDomain => e
     { json: { status: 'NXDOMAIN', from: @server }, zone: e.response.to_s }
   rescue Dnsruby::ServFail => e
+    # the nameserver will return SERVFAIL if DNSSEC validation fails. we then
+    # set `dnssec` to true because that tells the server that we want the raw
+    # data to validate ourselves.
+    if !resolver.dnssec
+      resolver.dnssec = true
+      @dnssec_failed = true
+      retry
+    end
+
     { json: { status: 'SERVFAIL', from: @server }, zone: e.response.to_s }
   rescue Dnsruby::ResolvTimeout
     { json: { status: 'TIMEOUT', from: @server } }

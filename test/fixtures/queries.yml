@@ -2,16 +2,17 @@
 #
 # Table name: queries
 #
-#  id         :uuid             not null, primary key
-#  domain     :string
-#  duration   :integer
-#  results    :json             not null
-#  server     :string
-#  server_ip  :string
-#  type       :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  session_id :string
+#  id            :uuid             not null, primary key
+#  dnssec_failed :boolean
+#  domain        :string
+#  duration      :integer
+#  results       :json             not null
+#  server        :string
+#  server_ip     :string
+#  type          :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  session_id    :string
 #
 
 one:

@@ -2,16 +2,17 @@
 #
 # Table name: queries
 #
-#  id         :uuid             not null, primary key
-#  domain     :string
-#  duration   :integer
-#  results    :json             not null
-#  server     :string
-#  server_ip  :string
-#  type       :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  session_id :string
+#  id            :uuid             not null, primary key
+#  dnssec_failed :boolean
+#  domain        :string
+#  duration      :integer
+#  results       :json             not null
+#  server        :string
+#  server_ip     :string
+#  type          :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  session_id    :string
 #
 class Query < ApplicationRecord
   self.inheritance_column = nil
@@ -82,6 +83,7 @@ class Query < ApplicationRecord
     dns_lookup = DNSLookup.new(server_ip)
     self.results = dns_lookup.run(domain, type)
     self.duration = dns_lookup.duration
+    self.dnssec_failed = dns_lookup.dnssec_failed
     self
   end
 
