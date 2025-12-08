@@ -15,8 +15,8 @@ Rails.application.routes.draw do
 
   get '(:server)/:type/:domain_name' => 'redirect#create',
       constraints: {
-        server: Regexp.new(Query.servers.keys.join('|'), 'i'),
-        type: Regexp.new(Query.types.join('|'), 'i'),
+        server: Regexp.new(Query::SERVERS.keys.join('|'), 'i'),
+        type: Regexp.new(Query::TYPES.join('|'), 'i'),
         domain_name: /([^\/]+?)(?=\.json|\.html|$|\/)/
       }, as: :redirect
 end

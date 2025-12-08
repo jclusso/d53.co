@@ -1,4 +1,19 @@
 GIT
+  remote: https://github.com/alexdalitz/dnsruby.git
+  revision: c97e7ecfc4c2952cfc74bfbaee8df5e2d4f2900a
+  specs:
+    dnsruby (1.73.1)
+      base64 (>= 0.2)
+      logger (~> 1.6)
+      simpleidn (~> 0.2.1)
+
+GIT
+  remote: https://github.com/amazing-print/amazing_print.git
+  revision: 06b5dc2a4693fa5b752640fcc6be9aad19696454
+  specs:
+    amazing_print (2.0.0)
+
+GIT
   remote: https://github.com/rails/rails.git
   revision: 80df39af44163eb4e91e86c8a044af5c10550d54
   branch: main
@@ -106,7 +121,6 @@ GEM
       railties
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
-    amazing_print (2.0.0)
     annotaterb (4.20.0)
       activerecord (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -137,10 +151,6 @@ GEM
     debug (1.11.0)
       irb (~> 1.10)
       reline (>= 0.3.8)
-    dnsruby (1.73.1)
-      base64 (>= 0.2)
-      logger (~> 1.6)
-      simpleidn (~> 0.2.1)
     dockerfile-rails (1.7.10)
       rails (>= 3.0.0)
     drb (2.2.3)
@@ -328,14 +338,14 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  amazing_print
+  amazing_print!
   annotaterb
   bootsnap
   brakeman
   bugsnag (~> 6.28)
   capybara
   debug
-  dnsruby
+  dnsruby!
   dockerfile-rails (>= 1.6)
   faker
   importmap-rails
