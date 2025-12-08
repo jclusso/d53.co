@@ -59,7 +59,7 @@ group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
   gem 'annotaterb'
-  gem 'amazing_print'
+  gem 'amazing_print', github: 'amazing-print/amazing_print'
 end
 
 group :test do
@@ -72,6 +72,6 @@ end
 gem 'tailwindcss-rails', '~> 4.4'
 
 gem 'dockerfile-rails', '>= 1.6', group: :development
-gem 'dnsruby'
+gem 'dnsruby', github: 'alexdalitz/dnsruby'
 gem 'minitest-retry'
 gem 'bugsnag', '~> 6.28'
