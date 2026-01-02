@@ -15,7 +15,7 @@ GIT
 
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 80df39af44163eb4e91e86c8a044af5c10550d54
+  revision: aa1bee96f565b2f894e4b9eef434990ecfaaa833
   branch: main
   specs:
     actioncable (8.2.0.alpha)
@@ -87,6 +87,7 @@ GIT
       json
       logger (>= 1.4.2)
       minitest (>= 5.1)
+      psych (>= 4)
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
@@ -193,7 +194,7 @@ GEM
     minitest-retry (0.3.0)
       minitest (>= 5.0)
     msgpack (1.8.0)
-    net-imap (0.5.12)
+    net-imap (0.6.2)
       date
       net-protocol
     net-pop (0.1.2)
@@ -309,7 +310,7 @@ GEM
       tailwindcss-ruby (~> 4.0)
     tailwindcss-ruby (4.1.16)
     thor (1.4.0)
-    timeout (0.4.4)
+    timeout (0.6.0)
     tsort (0.2.0)
     turbo-rails (2.0.20)
       actionpack (>= 7.1.0)
