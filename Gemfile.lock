@@ -133,7 +133,7 @@ GEM
       msgpack (~> 1.2)
     brakeman (8.0.1)
       racc
-    bugsnag (6.28.0)
+    bugsnag (6.29.0)
       concurrent-ruby (~> 1.0)
     builder (3.3.0)
     capybara (3.40.0)
@@ -344,7 +344,7 @@ DEPENDENCIES
   annotaterb
   bootsnap
   brakeman
-  bugsnag (~> 6.28)
+  bugsnag (~> 6.29)
   capybara
   debug
   dnsruby!
