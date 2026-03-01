@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: https://github.com/amazing-print/amazing_print.git
-  revision: 06b5dc2a4693fa5b752640fcc6be9aad19696454
+  revision: 1b687bf57fd124677df9c534afba22142b88acee
   specs:
     amazing_print (2.0.0)
 
