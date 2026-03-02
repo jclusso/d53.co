@@ -1,0 +1,39 @@
+# NOTE: This workflow uses GITHUB_TOKEN to merge, which means the resulting
+# push to master will NOT trigger push-based workflows (e.g. rubyonrails.yml).
+# This is acceptable because CI already runs on the PR before merge and
+# deployments are handled externally (Cloud 66 / Capistrano). If a push-based
+# GitHub Actions workflow is added that must run on every merge (e.g. CD),
+# switch GH_TOKEN to a PAT or GitHub App token so the merge triggers it.
+name: Auto-Merge Dependabot Linter, Test, and GitHub Actions Updates
+on:
+  pull_request:
+    paths:
+      - "Gemfile.lock"
+      - ".github/workflows/*.yml"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auto-approve and Merge
+        if: >-
+          (contains(fromJSON('["linters", "test"]'),
+          steps.metadata.outputs.dependency-group)) ||
+          (steps.metadata.outputs.package-ecosystem == 'github_actions')
+        run: |
+          gh pr review "$PR_URL" --approve
+          gh pr merge "$PR_URL" --auto --squash
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
