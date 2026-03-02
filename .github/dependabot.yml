@@ -5,8 +5,25 @@ updates:
   schedule:
     interval: monthly
   open-pull-requests-limit: 10
+  cooldown:
+    default-days: 3
+  groups:
+    linters:
+      patterns:
+        - "rubocop*"
+        - "brakeman"
+    test:
+      patterns:
+        - "capybara"
+        - "faker"
+        - "minitest*"
+        - "selenium-webdriver"
+    development:
+      dependency-type: development
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
     interval: monthly
   open-pull-requests-limit: 10
+  cooldown:
+    default-days: 3

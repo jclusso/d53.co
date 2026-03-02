@@ -67,11 +67,11 @@ group :test do
   gem 'capybara'
   gem 'selenium-webdriver'
   gem 'faker'
+  gem 'minitest-retry'
 end
 
 gem 'tailwindcss-rails', '~> 4.4'
 
 gem 'dockerfile-rails', '>= 1.6', group: :development
 gem 'dnsruby', github: 'alexdalitz/dnsruby'
-gem 'minitest-retry'
 gem 'bugsnag', '~> 6.29'
