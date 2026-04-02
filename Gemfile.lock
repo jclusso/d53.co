@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/alexdalitz/dnsruby.git
-  revision: 8814c2924489e33311e7bfb496f5d409cf1fe91c
+  revision: 74f5c4e6eec0552aad0f7b7f0928adb695172c5c
   specs:
     dnsruby (1.73.1)
       base64 (>= 0.2)
