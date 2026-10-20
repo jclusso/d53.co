@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class QueriesTest < ActionDispatch::IntegrationTest
+class QueriesFlowTest < ActionDispatch::IntegrationTest
   test 'searching shows the results and adds them to recent' do
     start_session
     get root_path
