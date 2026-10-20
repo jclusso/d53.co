@@ -1,11 +1,12 @@
 class QueriesController < ApplicationController
-  before_action :set_query, only: %i[show destroy]
+  before_action :set_query, only: :show
+  before_action :set_owned_query, only: :destroy
 
   def index
     @queries = if params[:filter] == 'all'
                  Query.all
                else
-                 Query.where(session_id: session.id.to_s)
+                 Query.for_session(session.id.to_s)
                end.order(created_at: :desc)
 
     @query = Query.new(@queries.first&.slice(:type, :server))
@@ -41,6 +42,10 @@ class QueriesController < ApplicationController
 
   def set_query
     @query = Query.find(params[:id])
+  end
+
+  def set_owned_query
+    @query = Query.for_session(session.id.to_s).find(params[:id])
   end
 
   def query_params

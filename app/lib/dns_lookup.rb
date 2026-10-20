@@ -8,9 +8,7 @@ class DNSLookup
   def run(domain, type)
     start_time = Time.monotonic_now
     resolver ||= Dnsruby::Resolver.new(do_caching: false, nameserver: @server)
-    if type == 'PTR' && is_ip?(domain)
-      domain = "#{domain.split('.').reverse.join('.')}.in-addr.arpa"
-    end
+    domain = IPAddr.new(domain).reverse if type == 'PTR' && is_ip?(domain)
     response = resolver.query(domain, type)
 
     {
