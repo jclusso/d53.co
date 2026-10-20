@@ -131,8 +131,8 @@ class DNSLookupTest < ActiveSupport::TestCase
     response = get_answer('d53.co', 'NS')
     assert_equal(
       [
-        { type: 'NS', name: 'eva.ns.cloudflare.com' },
-        { type: 'NS', name: 'sid.ns.cloudflare.com' }
+        { type: 'NS', name: 'ns1.opticgrid.com' },
+        { type: 'NS', name: 'ns2.opticgrid.com' }
       ],
       response[:json]
     )
@@ -160,7 +160,7 @@ class DNSLookupTest < ActiveSupport::TestCase
       [
         {
           type: 'SOA', expire: 604800, minimum: 1800,
-          mname: 'eva.ns.cloudflare.com', refresh: 10000, retry: 2400,
+          mname: 'ns1.opticgrid.com', refresh: 10000, retry: 2400,
           rname: 'dns.cloudflare.com'
         }
       ],
