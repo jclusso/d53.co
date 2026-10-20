@@ -15,10 +15,23 @@ class DNSLookupTest < ActiveSupport::TestCase
     assert_match 'SERVFAIL', response[:zone]
   end
 
+  def test_nxdomain
+    response = dns_lookup.run('example.invalid', 'A')
+    assert_equal({ status: 'NXDOMAIN', from: '1.1.1.1' }, response[:json])
+    assert_match 'NXDOMAIN', response[:zone]
+  end
+
   def test_timeout
-    response = DNSLookup.new('1.2.3.4').run('timeout.testing.d53.co', 'NS')
+    lookup = DNSLookup.new('1.2.3.4')
+    response = lookup.run('timeout.testing.d53.co', 'NS')
     assert_equal({ status: 'TIMEOUT', from: '1.2.3.4' }, response[:json])
     assert_nil response[:zone]
+    assert lookup.duration.positive?
+  end
+
+  def test_duration
+    dns_lookup.run('d53.co', 'A')
+    assert dns_lookup.duration.positive?
   end
 
   def test_not_implemented
@@ -152,6 +165,15 @@ class DNSLookupTest < ActiveSupport::TestCase
     response = get_answer('8.8.4.4', 'PTR')
     assert_equal([{ type: 'PTR', name: 'dns.google' }], response[:json])
     assert_match "4.4.8.8.in-addr.arpa.\tIN\tPTR", response[:zone]
+  end
+
+  def test_ptr_ipv6
+    response = get_answer('2001:4860:4860::8888', 'PTR')
+    assert_equal([{ type: 'PTR', name: 'dns.google' }], response[:json])
+    assert_match(
+      "8.8.8.8.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.6.8.4.0.6.8.4.1.0.0.2.ip6.arpa.\tIN\tPTR",
+      response[:zone]
+    )
   end
 
   def test_soa

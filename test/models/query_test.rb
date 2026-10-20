@@ -75,4 +75,80 @@ class QueryTest < ActiveSupport::TestCase
     query = Query.new(type: 'a')
     assert_equal 'A', query.type
   end
+
+  test 'type setter ignores nil' do
+    query = Query.new(type: nil)
+    assert_nil query.type
+  end
+
+  test 'domain setter ignores blank values' do
+    query = Query.new(domain: 'd53.co')
+    query.domain = ''
+    assert_equal 'd53.co', query.domain
+  end
+
+  test 'domain_name is an alias for domain' do
+    query = Query.new(domain_name: 'HTTPS://D53.co/')
+    assert_equal 'd53.co', query.domain
+  end
+
+  test 'requires domain, server, and type' do
+    query = Query.new
+    refute query.valid?
+    assert_includes query.errors[:domain], "can't be blank"
+    assert_includes query.errors[:server], "can't be blank"
+    assert_includes query.errors[:type], "can't be blank"
+  end
+
+  test 'is valid with domain, server, and type' do
+    query = Query.new(domain: 'd53.co', server: 'Google', type: 'A')
+    assert query.valid?
+  end
+
+  test 'for_session scopes to the session' do
+    queries(:two).update!(session_id: 'mine')
+    assert_equal [queries(:two)], Query.for_session('mine').to_a
+  end
+
+  test 'for_session is empty without a session' do
+    queries(:one).update!(session_id: '')
+    assert_empty Query.for_session('')
+    assert_empty Query.for_session(nil)
+  end
+
+  test 'owned_by? matches the session' do
+    query = queries(:one)
+    assert query.owned_by?('other-session')
+    refute query.owned_by?('mine')
+  end
+
+  test 'owned_by? is false without a session' do
+    query = Query.new(session_id: '')
+    refute query.owned_by?('')
+    refute query.owned_by?(nil)
+  end
+
+  test 'duration_ms is delimited' do
+    assert_equal '1,234 ms', queries(:one).duration_ms
+  end
+
+  test 'duration_ms defaults to zero' do
+    assert_equal '0 ms', Query.new.duration_ms
+  end
+
+  test 'redirect_params are lowercase' do
+    assert_equal(
+      { domain_name: 'google.com', type: 'a', server: 'cloudflare' },
+      queries(:one).redirect_params
+    )
+  end
+
+  test 'do_dns_lookup! stores the lookup' do
+    query = Query.new(domain: 'a.testing.d53.co', server: 'Cloudflare', type: 'A')
+    assert_same query, query.do_dns_lookup!
+    assert_equal 'NOERROR', query.results.dig('json', 'status')
+    assert_equal '0.0.0.0', query.results.dig('json', 'answer', 0, 'address')
+    assert query.duration.positive?
+    refute query.dnssec_failed
+  end
 end

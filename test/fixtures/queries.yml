@@ -19,10 +19,43 @@ one:
   domain: google.com
   type: A
   server: Cloudflare
-  results: {}
+  server_ip: 1.1.1.1
+  session_id: other-session
+  duration: 1234
+  dnssec_failed: false
+  results:
+    json:
+      status: NOERROR
+      from: 1.1.1.1
+      answer:
+        - type: A
+          address: 142.250.80.46
+          ttl: 300
+    zone: "google.com.\t300\tIN\tA\t142.250.80.46"
 
 two:
   domain: dig53.co
   type: NS
   server: Google
-  results: {}
+  server_ip: 8.8.8.8
+  session_id: other-session
+  duration: 5000
+  dnssec_failed: false
+  results:
+    json:
+      status: TIMEOUT
+      from: 8.8.8.8
+
+dnssec_failed:
+  domain: dnssec-failed.org
+  type: A
+  server: Cloudflare
+  server_ip: 1.1.1.1
+  session_id: other-session
+  duration: 50
+  dnssec_failed: true
+  results:
+    json:
+      status: NOERROR
+      from: 1.1.1.1
+    zone: "dnssec-failed.org.\t300\tIN\tA\t96.99.227.255"

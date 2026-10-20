@@ -32,6 +32,10 @@ class Query < ApplicationRecord
 
   validates_presence_of :domain, :server, :type
 
+  scope :for_session, ->(session_id) {
+    session_id.present? ? where(session_id: session_id) : none
+  }
+
   def domain=(value)
     return unless value.present?
 
@@ -55,7 +59,7 @@ class Query < ApplicationRecord
   end
 
   def type=(value)
-    cleaned_value = value.upcase
+    cleaned_value = value.to_s.upcase
     return unless TYPES.include?(cleaned_value)
 
     super(cleaned_value)
@@ -71,6 +75,10 @@ class Query < ApplicationRecord
     self.duration = dns_lookup.duration
     self.dnssec_failed = dns_lookup.dnssec_failed
     self
+  end
+
+  def owned_by?(session_id)
+    session_id.present? && self.session_id == session_id
   end
 
   def redirect_params
