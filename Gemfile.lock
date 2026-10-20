@@ -129,8 +129,8 @@ GEM
     base64 (0.3.0)
     bigdecimal (4.1.0)
     bindex (0.8.1)
-    bootsnap (1.23.0)
-      msgpack (~> 1.2)
+    bootsnap (1.26.0)
+      msgpack (~> 1.5)
     brakeman (8.1.0)
       racc
     bugsnag (6.29.0)
@@ -195,7 +195,7 @@ GEM
       prism (~> 1.5)
     minitest-retry (0.3.1)
       minitest (>= 5.0)
-    msgpack (1.8.0)
+    msgpack (1.8.5)
     net-imap (0.6.3)
       date
       net-protocol
