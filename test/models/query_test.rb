@@ -144,7 +144,6 @@ class QueryTest < ActiveSupport::TestCase
   end
 
   test 'do_dns_lookup! stores the lookup' do
-    require_live_dns
     query = Query.new(domain: 'a.testing.d53.co', server: 'Cloudflare', type: 'A')
     assert_same query, query.do_dns_lookup!
     assert_equal 'NOERROR', query.results.dig('json', 'status')

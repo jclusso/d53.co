@@ -1,8 +1,6 @@
 require 'test_helper'
 
 class DNSLookupTest < ActiveSupport::TestCase
-  setup { require_live_dns }
-
   def test_noerror
     response = dns_lookup.run('d53.co', 'A')
     assert_equal(
