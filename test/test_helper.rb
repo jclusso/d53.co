@@ -13,6 +13,12 @@ module ActiveSupport
     fixtures :all
 
     # Add more helper methods to be used by all tests here...
+
+    # Sandboxes like the Dependabot review workflow block DNS to public
+    # resolvers, so these tests would only time out there.
+    def require_live_dns
+      skip 'Live DNS lookups are disabled' if ENV['SKIP_LIVE_DNS']
+    end
   end
 end
 

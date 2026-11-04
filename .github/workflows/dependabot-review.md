@@ -29,6 +29,7 @@ services:
     options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 env:
   DATABASE_URL: postgres://postgres:postgres@host.docker.internal:5432
+  SKIP_LIVE_DNS: "1"
 tools:
   github:
     mode: gh-proxy
