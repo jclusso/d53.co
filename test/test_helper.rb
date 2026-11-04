@@ -4,6 +4,17 @@ require 'rails/test_help'
 require 'minitest/retry'
 Minitest::Retry.use!
 
+# Sandboxes like the Dependabot review workflow block DNS to public
+# resolvers, so any test that reaches a live lookup skips instead of timing
+# out.
+if ENV['SKIP_LIVE_DNS']
+  DNSLookup.prepend(Module.new do
+    def run(*)
+      raise Minitest::Skip, 'Live DNS lookups are disabled'
+    end
+  end)
+end
+
 module ActiveSupport
   class TestCase
     # Run tests in parallel with specified workers
