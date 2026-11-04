@@ -37,7 +37,7 @@ tools:
     mode: gh-proxy
   edit:
   web-fetch:
-  bash: [cat, grep, find, ls, head, tail, wc, jq, curl, "bundle:*", "bin/ci:*", "bin/rails:*", "bin/setup:*"]
+  bash: ["*"]
 network:
   allowed: [defaults, github, ruby]
 steps:
