@@ -30,6 +30,8 @@ services:
 env:
   DATABASE_URL: postgres://postgres:postgres@host.docker.internal:5432
   SKIP_LIVE_DNS: "1"
+  # The runner's Ruby gem directory is read-only inside the sandbox.
+  BUNDLE_PATH: vendor/bundle
 tools:
   github:
     mode: gh-proxy
