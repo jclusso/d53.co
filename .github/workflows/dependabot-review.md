@@ -14,7 +14,7 @@ permissions:
 engine: claude
 model: claude-opus-5-5
 checkout:
-  ref: ${{ github.event.workflow_run.head_branch }}
+  ref: ${{ github.event.workflow_run.head_sha }}
 sandbox:
   agent:
     runtime: docker-sudo-iptables
@@ -38,16 +38,15 @@ tools:
 network:
   allowed: [defaults, github, ruby]
 steps:
+  - name: Check out the PR branch at the commit CI tested
+    env:
+      HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+    run: git switch -C "$HEAD_BRANCH"
   - name: Install packages
     run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl libjemalloc2 libvips postgresql-client libpq-dev
   - uses: ruby/setup-ruby@v1
     with:
       ruby-version: .ruby-version
-      bundler-cache: true
-  - name: Prepare databases
-    env:
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432
-    run: bin/rails db:prepare && RAILS_ENV=test bin/rails db:prepare
 safe-outputs:
   staged: true
   submit-pull-request-review:
@@ -61,20 +60,38 @@ safe-outputs:
     enable-auto-merge:
       description: Enable auto-merge on the PR after approving it.
       runs-on: ubuntu-latest
+      needs: [safe_outputs]
       env:
         GH_TOKEN: ${{ secrets.DEPENDABOT_PAT }}
         PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
       steps:
         - run: |
+            set -euo pipefail
+
             if [ "$GH_AW_SAFE_OUTPUTS_STAGED" = "true" ]; then
               echo "Staged mode: would enable auto-merge on #$PR_NUMBER."
               exit 0
             fi
-            if jq -e '.items[] | select(.type == "push_to_pull_request_branch")' "$GH_AW_AGENT_OUTPUT" >/dev/null; then
+
+            if [ "$GH_AW_DETECTION_CONCLUSION" != "success" ]; then
+              echo "Threat detection concluded '$GH_AW_DETECTION_CONCLUSION', so auto-merge stays off."
+              exit 1
+            fi
+
+            pushes=$(jq '[.items[] | select(.type == "push_to_pull_request_branch")] | length' "$GH_AW_AGENT_OUTPUT")
+            if [ "$pushes" -ne 0 ]; then
               echo "This run pushed changes, so auto-merge stays off."
               exit 1
             fi
-            gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --auto --merge
+
+            approvals=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews" --paginate \
+              --jq "[.[] | select(.state == \"APPROVED\" and .commit_id == \"$GH_AW_HEAD_SHA\")] | length" | paste -sd+ - | bc)
+            if [ "$approvals" -eq 0 ]; then
+              echo "No approval was posted for $GH_AW_HEAD_SHA, so auto-merge stays off."
+              exit 1
+            fi
+
+            gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --auto --merge --match-head-commit "$GH_AW_HEAD_SHA"
 ---
 
 # Dependabot Review
