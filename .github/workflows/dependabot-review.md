@@ -115,7 +115,6 @@ steps:
       path: vendor/bundle
       key: ${{ steps.master-gems.outputs.key }}
 safe-outputs:
-  staged: true
   # Detection only scans Claude's output for anything malicious.
   threat-detection:
     model: claude-sonnet-5-5
@@ -138,11 +137,6 @@ safe-outputs:
       steps:
         - run: |
             set -euo pipefail
-
-            if [ "$GH_AW_SAFE_OUTPUTS_STAGED" = "true" ]; then
-              echo "Staged mode: would enable auto-merge on #$PR_NUMBER."
-              exit 0
-            fi
 
             if [ "$GH_AW_DETECTION_CONCLUSION" != "success" ]; then
               echo "Threat detection concluded '$GH_AW_DETECTION_CONCLUSION', so auto-merge stays off."
