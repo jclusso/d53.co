@@ -13,7 +13,16 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
-    # Add more helper methods to be used by all tests here...
+    # Recorded DNS lookups finish in well under a millisecond, so tests that
+    # check a lookup's duration advance the clock by a fixed step per read.
+    def with_monotonic_clock(step:)
+      original = Time.method(:monotonic_now)
+      now = 0.0
+      Time.define_singleton_method(:monotonic_now) { now += step }
+      yield
+    ensure
+      Time.define_singleton_method(:monotonic_now, original)
+    end
   end
 end
 
