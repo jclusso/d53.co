@@ -88,8 +88,43 @@ steps:
   - uses: ruby/setup-ruby@v1
     with:
       ruby-version: .ruby-version
+  # Preinstall master's gems so the sandbox only installs what the PR changes.
+  # The cache only ever holds master's gems, installed here before the sandbox
+  # starts, so a PR's dependencies can't tamper with later reviews.
+  - name: Find master's lockfile
+    id: master-gems
+    run: |
+      git fetch --depth 1 origin "$GITHUB_SHA"
+      dir="$RUNNER_TEMP/master-gems"
+      mkdir -p "$dir"
+      for f in Gemfile Gemfile.lock .ruby-version; do git show "$GITHUB_SHA:$f" > "$dir/$f"; done
+      if cmp -s "$dir/.ruby-version" .ruby-version; then
+        echo "dir=$dir" >> "$GITHUB_OUTPUT"
+        echo "key=dependabot-review-gems-$(cat .ruby-version)-$(sha256sum "$dir/Gemfile.lock" | cut -c1-16)" >> "$GITHUB_OUTPUT"
+      fi
+  - id: gem-cache
+    if: steps.master-gems.outputs.key
+    uses: actions/cache/restore@v6
+    with:
+      path: vendor/bundle
+      key: ${{ steps.master-gems.outputs.key }}
+  - name: Install master's gems
+    if: steps.master-gems.outputs.key && steps.gem-cache.outputs.cache-hit != 'true'
+    env:
+      BUNDLE_GEMFILE: ${{ steps.master-gems.outputs.dir }}/Gemfile
+      BUNDLE_PATH: ${{ github.workspace }}/vendor/bundle
+      BUNDLE_FROZEN: "true"
+    run: bundle install --jobs 4
+  - if: steps.master-gems.outputs.key && steps.gem-cache.outputs.cache-hit != 'true'
+    uses: actions/cache/save@v6
+    with:
+      path: vendor/bundle
+      key: ${{ steps.master-gems.outputs.key }}
 safe-outputs:
   staged: true
+  # Detection only scans Claude's output for anything malicious.
+  threat-detection:
+    model: claude-sonnet-5-5
   submit-pull-request-review:
     target: ${{ github.event.workflow_run.pull_requests[0].number || inputs.pr }}
   add-comment:
