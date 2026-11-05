@@ -11,16 +11,56 @@ on:
         required: true
         type: number
   bots: ["dependabot[bot]"]
+  permissions:
+    pull-requests: read
+  # A conflicting or outdated PR gets a new commit from Dependabot, and that
+  # commit's CI run triggers a fresh review, so this step fails to skip the
+  # review. If GitHub can't be read, the review runs and auto-merge's own
+  # checks still apply.
+  steps:
+    - name: Check the PR is current and mergeable
+      id: reviewable
+      if: >-
+        github.event_name == 'workflow_dispatch' ||
+        (github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.triggering_actor.login == 'dependabot[bot]')
+      continue-on-error: true
+      env:
+        GH_TOKEN: ${{ github.token }}
+        PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number || inputs.pr }}
+        HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      run: |
+        # GitHub computes mergeability in the background, so UNKNOWN can
+        # resolve after a few seconds.
+        for attempt in 1 2 3 4 5; do
+          pr=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json headRefOid,mergeable --jq '"\(.headRefOid) \(.mergeable)"') || {
+            echo "::warning::Couldn't read #$PR_NUMBER, so the review runs anyway."
+            exit 0
+          }
+          read -r head mergeable <<< "$pr"
+          [ "$mergeable" != "UNKNOWN" ] && break
+          sleep 5
+        done
+        if [ -n "$HEAD_SHA" ] && [ "$head" != "$HEAD_SHA" ]; then
+          echo "::notice::#$PR_NUMBER moved from $HEAD_SHA to $head, so the newer commit's review will cover it."
+          exit 1
+        fi
+        if [ "$mergeable" = "CONFLICTING" ]; then
+          echo "::notice::#$PR_NUMBER conflicts with master, so it waits for Dependabot to rebase it."
+          exit 1
+        fi
 run-name: "${{ github.event_name == 'workflow_dispatch' && format('Review #{0} (manual)', inputs.pr) || format('Review #{0}: {1}', github.event.workflow_run.pull_requests[0].number, github.event.workflow_run.display_title) }}"
 if: >-
-  github.event_name == 'workflow_dispatch' ||
-  (github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.triggering_actor.login == 'dependabot[bot]')
+  (github.event_name == 'workflow_dispatch' ||
+  (github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.triggering_actor.login == 'dependabot[bot]')) &&
+  needs.pre_activation.outputs.reviewable_result == 'success'
 permissions:
   contents: read
   pull-requests: read
   issues: read
   actions: read
 concurrency:
+  group: gh-aw-${{ github.workflow }}
+  queue: max
   job-discriminator: ${{ github.run_id }}
 # The sandbox firewall can't reach service containers on Ubuntu 26.04 runners
 # (gh-aw-firewall#11083). Remove once gh-aw ships firewall v0.29.7 or later.
