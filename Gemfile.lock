@@ -198,7 +198,7 @@ GEM
       prism (~> 1.5)
     minitest-retry (0.3.1)
       minitest (>= 5.0)
-    msgpack (1.8.0)
+    msgpack (1.8.2)
     net-imap (0.6.8)
       date
       net-protocol
@@ -212,7 +212,7 @@ GEM
     nokogiri (1.19.7)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    parallel (1.27.0)
+    parallel (2.3.0)
     parser (3.3.13.0)
       ast (~> 2.4.1)
       racc
