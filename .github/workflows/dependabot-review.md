@@ -22,6 +22,9 @@ permissions:
   actions: read
 concurrency:
   job-discriminator: ${{ github.run_id }}
+# The sandbox firewall can't reach service containers on Ubuntu 26.04 runners
+# (gh-aw-firewall#11083). Remove once gh-aw ships firewall v0.29.7 or later.
+runs-on: ubuntu-24.04
 engine: claude
 model: claude-opus-5-5
 checkout:
@@ -87,7 +90,7 @@ steps:
       for f in Gemfile Gemfile.lock .ruby-version; do git show "$GITHUB_SHA:$f" > "$dir/$f"; done
       if cmp -s "$dir/.ruby-version" .ruby-version; then
         echo "dir=$dir" >> "$GITHUB_OUTPUT"
-        echo "key=dependabot-review-gems-$(cat .ruby-version)-$(sha256sum "$dir/Gemfile.lock" | cut -c1-16)" >> "$GITHUB_OUTPUT"
+        echo "key=dependabot-review-gems-$ImageOS-$(cat .ruby-version)-$(sha256sum "$dir/Gemfile.lock" | cut -c1-16)" >> "$GITHUB_OUTPUT"
       fi
   - id: gem-cache
     if: steps.master-gems.outputs.key
