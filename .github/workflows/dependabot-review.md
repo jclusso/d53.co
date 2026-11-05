@@ -119,22 +119,26 @@ safe-outputs:
               exit 1
             fi
 
-            pushes=$(jq '[.items[] | select(.type == "push_to_pull_request_branch")] | length' "$GH_AW_AGENT_OUTPUT")
-            if [ "$pushes" -ne 0 ]; then
+            # Every check below has to pass explicitly; anything unreadable
+            # keeps auto-merge off.
+            pushes=$(jq -e '.items | map(select(.type == "push_to_pull_request_branch")) | length' "$GH_AW_AGENT_OUTPUT") \
+              || { echo "Couldn't read this run's output, so auto-merge stays off."; exit 1; }
+            if [ "$pushes" != "0" ]; then
               echo "This run pushed changes, so auto-merge stays off."
               exit 1
             fi
 
+            reviews=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews" --paginate --jq '.[]' | jq -s .) \
+              || { echo "Couldn't read the PR's reviews, so auto-merge stays off."; exit 1; }
+
             # Manual runs have no CI event, so use the commit this run approved.
             reviewed_sha="${GH_AW_HEAD_SHA:-}"
             if [ -z "$reviewed_sha" ]; then
-              reviewed_sha=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews" --paginate \
-                --jq '.[] | select(.state == "APPROVED" and .user.login == "github-actions[bot]") | .commit_id' | tail -1)
+              reviewed_sha=$(jq -r '[.[] | select(.state == "APPROVED" and .user.login == "github-actions[bot]")] | last | .commit_id // empty' <<<"$reviews")
             fi
 
-            approvals=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews" --paginate \
-              --jq "[.[] | select(.state == \"APPROVED\" and .commit_id == \"$reviewed_sha\")] | length" | paste -sd+ - | bc)
-            if [ -z "$reviewed_sha" ] || [ "$approvals" -eq 0 ]; then
+            approvals=$(jq --arg sha "$reviewed_sha" '[.[] | select(.state == "APPROVED" and .commit_id == $sha)] | length' <<<"$reviews")
+            if [ -z "$reviewed_sha" ] || ! [[ "$approvals" =~ ^[1-9][0-9]*$ ]]; then
               echo "No approval was posted for the reviewed commit, so auto-merge stays off."
               exit 1
             fi
