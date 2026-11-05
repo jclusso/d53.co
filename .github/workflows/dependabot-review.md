@@ -43,6 +43,7 @@ env:
   # The runner's Ruby gem directory is read-only inside the sandbox.
   BUNDLE_PATH: vendor/bundle
   SE_OFFLINE: "true"
+  CHROME_NO_SANDBOX: "1"
 tools:
   github:
     mode: gh-proxy
@@ -50,7 +51,8 @@ tools:
   web-fetch:
   bash: ["*"]
 network:
-  allowed: [defaults, github, ruby]
+  # registry.npmjs.org serves the advisories `bin/importmap audit` checks.
+  allowed: [defaults, github, ruby, registry.npmjs.org]
 steps:
   - name: Check out the PR branch at the commit being reviewed
     env:
