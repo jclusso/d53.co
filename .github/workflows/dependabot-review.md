@@ -90,9 +90,11 @@ steps:
       ruby-version: .ruby-version
   # Preinstall master's gems so the sandbox only installs what the PR changes.
   # The cache only ever holds master's gems, installed here before the sandbox
-  # starts, so a PR's dependencies can't tamper with later reviews.
+  # starts, so a PR's dependencies can't tamper with later reviews. It's only
+  # a speedup, so these steps never fail the review.
   - name: Find master's lockfile
     id: master-gems
+    continue-on-error: true
     run: |
       git fetch --depth 1 origin "$GITHUB_SHA"
       dir="$RUNNER_TEMP/master-gems"
@@ -104,18 +106,22 @@ steps:
       fi
   - id: gem-cache
     if: steps.master-gems.outputs.key
+    continue-on-error: true
     uses: actions/cache/restore@v6
     with:
       path: vendor/bundle
       key: ${{ steps.master-gems.outputs.key }}
   - name: Install master's gems
+    id: install-gems
     if: steps.master-gems.outputs.key && steps.gem-cache.outputs.cache-hit != 'true'
+    continue-on-error: true
     env:
       BUNDLE_GEMFILE: ${{ steps.master-gems.outputs.dir }}/Gemfile
       BUNDLE_PATH: ${{ github.workspace }}/vendor/bundle
       BUNDLE_FROZEN: "true"
-    run: bundle install --jobs 4
-  - if: steps.master-gems.outputs.key && steps.gem-cache.outputs.cache-hit != 'true'
+    run: bundle install
+  - if: steps.install-gems.outcome == 'success'
+    continue-on-error: true
     uses: actions/cache/save@v6
     with:
       path: vendor/bundle
