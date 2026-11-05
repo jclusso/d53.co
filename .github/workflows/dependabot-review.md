@@ -43,7 +43,6 @@ env:
   # The runner's Ruby gem directory is read-only inside the sandbox.
   BUNDLE_PATH: vendor/bundle
   SE_OFFLINE: "true"
-  CHROME_NO_SANDBOX: "1"
 tools:
   github:
     mode: gh-proxy
@@ -76,10 +75,16 @@ steps:
     uses: browser-actions/setup-chrome@v2
     with:
       install-chromedriver: true
+  # Chrome can't use its own sandbox inside the agent's container. Wrapping
+  # the binary keeps that out of the app, so it works on any PR branch.
   - name: Use the installed Chrome for system tests
     env:
       CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
-    run: echo "SE_BROWSER_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+    run: |
+      wrapper="$(dirname "$CHROME_PATH")/chrome-container"
+      printf '#!/bin/sh\nexec "%s" --no-sandbox --disable-dev-shm-usage "$@"\n' "$CHROME_PATH" > "$wrapper"
+      chmod +x "$wrapper"
+      echo "SE_BROWSER_PATH=$wrapper" >> "$GITHUB_ENV"
   - uses: ruby/setup-ruby@v1
     with:
       ruby-version: .ruby-version
