@@ -174,7 +174,7 @@ safe-outputs:
 
 # Dependabot Review
 
-{{#if ${{ github.event.inputs.pr }} }}
+{{#if ${{ github.event_name }} == "workflow_dispatch" }}
 Review Dependabot PR #${{ github.event.inputs.pr }}.
 {{#else}}
 Review the Dependabot PR that CI run ${{ github.event.workflow_run.html_url }} just finished on.
