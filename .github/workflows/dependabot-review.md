@@ -11,6 +11,7 @@ on:
         required: true
         type: number
   bots: ["dependabot[bot]"]
+run-name: "${{ github.event_name == 'workflow_dispatch' && format('Review #{0} (manual)', inputs.pr) || format('Review #{0}: {1}', github.event.workflow_run.pull_requests[0].number, github.event.workflow_run.display_title) }}"
 if: >-
   github.event_name == 'workflow_dispatch' ||
   (github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.triggering_actor.login == 'dependabot[bot]')
