@@ -30,8 +30,8 @@ class DNSLookupTest < ActiveSupport::TestCase
   end
 
   def test_duration
-    dns_lookup.run('d53.co', 'A')
-    assert dns_lookup.duration.positive?
+    with_monotonic_clock(step: 0.0125) { dns_lookup.run('d53.co', 'A') }
+    assert_in_delta 12.5, dns_lookup.duration
   end
 
   def test_not_implemented

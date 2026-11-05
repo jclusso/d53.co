@@ -59,7 +59,7 @@ class QueriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should create query' do
-    domain = Faker::Internet.unique.domain_name
+    domain = 'create.testing.d53.co'
     assert_difference('Query.count') do
       post queries_url, params: {
         query: { domain: domain, server: 'Cloudflare', type: 'A' }
@@ -71,15 +71,17 @@ class QueriesControllerTest < ActionDispatch::IntegrationTest
 
   test 'create stores the lookup results and session' do
     session_id = start_session
-    post queries_url, params: {
-      query: { domain: 'a.testing.d53.co', server: 'Google', type: 'A' }
-    }
+    with_monotonic_clock(step: 0.0125) do
+      post queries_url, params: {
+        query: { domain: 'a.testing.d53.co', server: 'Google', type: 'A' }
+      }
+    end
 
     query = Query.order(:created_at).last
     assert_equal session_id, query.session_id
     assert_equal '8.8.8.8', query.server_ip
     assert_equal 'NOERROR', query.results.dig('json', 'status')
-    assert query.duration.positive?
+    assert_equal 12, query.duration
   end
 
   test 'create renders index when invalid' do

@@ -145,10 +145,12 @@ class QueryTest < ActiveSupport::TestCase
 
   test 'do_dns_lookup! stores the lookup' do
     query = Query.new(domain: 'a.testing.d53.co', server: 'Cloudflare', type: 'A')
-    assert_same query, query.do_dns_lookup!
+    with_monotonic_clock(step: 0.0125) do
+      assert_same query, query.do_dns_lookup!
+    end
     assert_equal 'NOERROR', query.results.dig('json', 'status')
     assert_equal '0.0.0.0', query.results.dig('json', 'answer', 0, 'address')
-    assert query.duration.positive?
+    assert_equal 12, query.duration
     refute query.dnssec_failed
   end
 end
