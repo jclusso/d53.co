@@ -1,7 +1,7 @@
 # Agents
 
 - `bin/setup --skip-server` installs gems and prepares the database.
-- `bin/ci` runs every check CI runs.
+- `bin/ci` runs the lint, security and test checks. CI also builds and boots the production Docker image.
 
 ## Dependabot review workflow
 
