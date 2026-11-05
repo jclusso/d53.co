@@ -59,7 +59,7 @@ class QueriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should create query' do
-    domain = Faker::Internet.unique.domain_name
+    domain = 'create.testing.d53.co'
     assert_difference('Query.count') do
       post queries_url, params: {
         query: { domain: domain, server: 'Cloudflare', type: 'A' }

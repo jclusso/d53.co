@@ -2,7 +2,7 @@ require 'test_helper'
 
 class RedirectControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @domain = Faker::Internet.unique.domain_name
+    @domain = 'redirect.testing.d53.co'
   end
 
   test 'should create query with server, type, and domain' do
