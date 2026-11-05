@@ -99,3 +99,38 @@ jobs:
           name: screenshots
           path: ${{ github.workspace }}/tmp/screenshots
           if-no-files-found: ignore
+
+  production:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Build the production image
+        run: docker build -t d53 .
+
+      # Boot it the way Fly does and check the pages a deploy would serve.
+      - name: Boot the production image
+        run: |
+          docker run -d --name app --network host \
+            -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/d53_co_production \
+            -e SECRET_KEY_BASE=ci \
+            d53
+          for _ in $(seq 1 30); do curl -fsS -o /dev/null http://localhost:3000/up && break; sleep 2; done
+          curl -fsS -o /dev/null http://localhost:3000/up
+          curl -fsS -o /dev/null -H 'Host: d53.co' http://localhost:3000/
+
+      - name: Show app logs
+        if: failure()
+        run: docker logs app
