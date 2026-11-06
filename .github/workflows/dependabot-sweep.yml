@@ -1,0 +1,95 @@
+# Daily check that no open Dependabot PR is stuck. For each one that isn't
+# already labeled `needs human`, it:
+#
+# - recreates it when it conflicts or is missing a required check, such as
+#   PRs opened before a check was added
+# - starts a review when its current commit has no decision yet
+# - labels it `needs human` when a review of its current commit ended without
+#   a decision, or approved it without turning on auto-merge
+name: Dependabot Sweep
+
+on:
+  schedule:
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      # Dependabot only takes commands from people with write access, and
+      # starting a review with GITHUB_TOKEN would run it as github-actions.
+      DEPENDABOT_PAT: ${{ secrets.DEPENDABOT_PAT }}
+    steps:
+      - name: Sweep open Dependabot PRs
+        run: |
+          set -euo pipefail
+
+          required=$(gh api "repos/$GH_REPO/rules/branches/master" \
+            --jq '[.[] | select(.type == "required_status_checks") | .parameters.required_status_checks[].context] | unique')
+
+          for pr in $(gh pr list --author app/dependabot --state open --limit 100 --json number --jq '.[].number'); do
+            info=$(gh pr view "$pr" --json headRefOid,mergeStateStatus,autoMergeRequest,labels,commits)
+            if jq -e '.labels | any(.name == "needs human")' <<<"$info" >/dev/null; then
+              echo "#$pr: waiting on a human"
+              continue
+            fi
+
+            sha=$(jq -r .headRefOid <<<"$info")
+            pushed=$(jq -r '.commits[-1].committedDate' <<<"$info")
+            checks=$(gh api "repos/$GH_REPO/commits/$sha/check-runs" --paginate --jq '.check_runs[] | {name, status}' | jq -s .)
+            missing=$(jq -r --argjson required "$required" '[$required[] as $r | if all(.[]; .name != $r) then $r else empty end] | join(", ")' <<<"$checks")
+
+            if [ "$(jq -r .mergeStateStatus <<<"$info")" = "DIRTY" ] || [ -n "$missing" ]; then
+              echo "#$pr: recreating (conflicts or missing: ${missing:-none})"
+              GH_TOKEN="$DEPENDABOT_PAT" gh pr comment "$pr" --body "@dependabot recreate"
+              continue
+            fi
+
+            if jq -e 'any(.status != "completed")' <<<"$checks" >/dev/null; then
+              echo "#$pr: CI still running"
+              continue
+            fi
+
+            runs=$(gh run list --workflow dependabot-review.lock.yml --limit 200 \
+              --json displayTitle,status,conclusion,createdAt,url \
+              --jq "[.[] | select((.displayTitle | test(\"^Review #${pr}[ :]\")) and .createdAt > \"$pushed\" and .conclusion != \"skipped\" and .conclusion != \"cancelled\")]")
+
+            if jq -e 'any(.status != "completed")' <<<"$runs" >/dev/null; then
+              echo "#$pr: review in progress"
+              continue
+            fi
+
+            approved=$(gh api "repos/$GH_REPO/pulls/$pr/reviews" --paginate --jq '.[]' \
+              | jq -s --arg sha "$sha" 'any(.state == "APPROVED" and .user.login == "github-actions[bot]" and .commit_id == $sha)')
+            if [ "$approved" = "true" ]; then
+              if jq -e '.autoMergeRequest != null' <<<"$info" >/dev/null; then
+                echo "#$pr: approved, auto-merge on"
+              else
+                echo "#$pr: approved, but auto-merge isn't on"
+                gh pr edit "$pr" --add-label "needs human"
+                gh pr comment "$pr" --body "⚠️ The Dependabot review approved this commit but didn't turn on auto-merge: $(jq -r '.[0].url' <<<"$runs")"
+              fi
+              continue
+            fi
+
+            # A run started by CI may have reviewed an older commit, so only a
+            # manual run, which always reviews the current commit, counts.
+            if ! jq -e 'any(.displayTitle | endswith("(manual)"))' <<<"$runs" >/dev/null; then
+              echo "#$pr: starting a review"
+              GH_TOKEN="$DEPENDABOT_PAT" gh workflow run dependabot-review.lock.yml -f pr="$pr"
+            else
+              echo "#$pr: reviewed without a decision"
+              gh pr edit "$pr" --add-label "needs human"
+              gh pr comment "$pr" --body "⚠️ The Dependabot review of this commit ended without approving or flagging it: $(jq -r '.[0].url' <<<"$runs")"
+            fi
+          done
