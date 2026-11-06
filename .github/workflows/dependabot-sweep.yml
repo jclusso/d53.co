@@ -37,11 +37,12 @@ jobs:
           required=$(gh api "repos/$GH_REPO/rules/branches/master" \
             --jq '[.[] | select(.type == "required_status_checks") | .parameters.required_status_checks[].context] | unique')
 
-          for pr in $(gh pr list --author app/dependabot --state open --limit 100 --json number --jq '.[].number'); do
+          sweep() {
+            local pr=$1
             info=$(gh pr view "$pr" --json headRefOid,mergeStateStatus,autoMergeRequest,labels,commits)
             if jq -e '.labels | any(.name == "needs human")' <<<"$info" >/dev/null; then
               echo "#$pr: waiting on a human"
-              continue
+              return
             fi
 
             sha=$(jq -r .headRefOid <<<"$info")
@@ -52,12 +53,12 @@ jobs:
             if [ "$(jq -r .mergeStateStatus <<<"$info")" = "DIRTY" ] || [ -n "$missing" ]; then
               echo "#$pr: recreating (conflicts or missing: ${missing:-none})"
               GH_TOKEN="$DEPENDABOT_PAT" gh pr comment "$pr" --body "@dependabot recreate"
-              continue
+              return
             fi
 
             if jq -e 'any(.status != "completed")' <<<"$checks" >/dev/null; then
               echo "#$pr: CI still running"
-              continue
+              return
             fi
 
             runs=$(gh run list --workflow dependabot-review.lock.yml --limit 200 \
@@ -66,7 +67,7 @@ jobs:
 
             if jq -e 'any(.status != "completed")' <<<"$runs" >/dev/null; then
               echo "#$pr: review in progress"
-              continue
+              return
             fi
 
             approved=$(gh api "repos/$GH_REPO/pulls/$pr/reviews" --paginate --jq '.[]' \
@@ -79,7 +80,7 @@ jobs:
                 gh pr edit "$pr" --add-label "needs human"
                 gh pr comment "$pr" --body "⚠️ The Dependabot review approved this commit but didn't turn on auto-merge: $(jq -r '.[0].url' <<<"$runs")"
               fi
-              continue
+              return
             fi
 
             # A run started by CI may have reviewed an older commit, so only a
@@ -92,4 +93,19 @@ jobs:
               gh pr edit "$pr" --add-label "needs human"
               gh pr comment "$pr" --body "⚠️ The Dependabot review of this commit ended without approving or flagging it: $(jq -r '.[0].url' <<<"$runs")"
             fi
+          }
+
+          # Each PR runs in its own subshell so one failure doesn't stop the
+          # rest; the run still fails at the end so failures stay visible.
+          failed=0
+          for pr in $(gh pr list --author app/dependabot --state open --limit 100 --json number --jq '.[].number'); do
+            set +e
+            (set -e; sweep "$pr")
+            status=$?
+            set -e
+            if [ "$status" -ne 0 ]; then
+              echo "#$pr: failed"
+              failed=1
+            fi
           done
+          exit "$failed"
